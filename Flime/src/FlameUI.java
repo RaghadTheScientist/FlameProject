@@ -298,7 +298,6 @@ public class FlameUI extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setFocusableWindowState(false);
-        setPreferredSize(new java.awt.Dimension(900, 500));
         setResizable(false);
 
         BaseLayout.setLayout(new java.awt.CardLayout());
@@ -493,6 +492,11 @@ public class FlameUI extends javax.swing.JFrame {
         P2P3Button1.setText("Hot Drinks");
         buttonGroup1.add(P2P3Button1);
         P2P3Button1.setPreferredSize(new java.awt.Dimension(75, 40));
+        P2P3Button1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                P2P3Button1ActionPerformed(evt);
+            }
+        });
 
         P2P3Button2.setBackground(new java.awt.Color(226, 226, 226));
         P2P3Button2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
@@ -510,6 +514,11 @@ public class FlameUI extends javax.swing.JFrame {
         P2P3Button3.setText("Sweet");
         buttonGroup1.add(P2P3Button3);
         P2P3Button3.setPreferredSize(new java.awt.Dimension(75, 40));
+        P2P3Button3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                P2P3Button3ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout P2Panel3Layout = new javax.swing.GroupLayout(P2Panel3);
         P2Panel3.setLayout(P2Panel3Layout);
@@ -562,7 +571,7 @@ public class FlameUI extends javax.swing.JFrame {
                 .addContainerGap(298, Short.MAX_VALUE))
         );
 
-        P2Panel4.add(P2P4Panel1, "card4");
+        P2Panel4.add(P2P4Panel1, "HotDrinks");
 
         P2P4P2Label.setText("cold drinks");
 
@@ -583,7 +592,7 @@ public class FlameUI extends javax.swing.JFrame {
                 .addContainerGap(298, Short.MAX_VALUE))
         );
 
-        P2Panel4.add(P2P4Panel2, "card3");
+        P2Panel4.add(P2P4Panel2, "ColdDrinks");
 
         P2P4P3Label.setText("sweet");
 
@@ -604,7 +613,7 @@ public class FlameUI extends javax.swing.JFrame {
                 .addContainerGap(298, Short.MAX_VALUE))
         );
 
-        P2Panel4.add(P2P4Panel3, "card2");
+        P2Panel4.add(P2P4Panel3, "Sweet");
 
         javax.swing.GroupLayout Page2PanelLayout = new javax.swing.GroupLayout(Page2Panel);
         Page2Panel.setLayout(Page2PanelLayout);
@@ -970,7 +979,11 @@ public class FlameUI extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void P1ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P1ButtonActionPerformed
-        // TODO add your handling code here:
+        if(P1ComboBox.getSelectedItem().toString().equals("Cashier")){
+        BaseLayout.removeAll();
+        BaseLayout.add(Page2Panel);
+        BaseLayout.validate();
+        }
     }//GEN-LAST:event_P1ButtonActionPerformed
 
     private void P2P1Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P1Button1ActionPerformed
@@ -978,7 +991,9 @@ public class FlameUI extends javax.swing.JFrame {
     }//GEN-LAST:event_P2P1Button1ActionPerformed
 
     private void P2P3Button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P3Button2ActionPerformed
-        // TODO add your handling code here:
+       P2Panel4.removeAll();
+       P2Panel4.add(P2P4Panel2);
+       P2Panel4.validate();
     }//GEN-LAST:event_P2P3Button2ActionPerformed
 
     private void P2P2P2Button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P2P2Button2ActionPerformed
@@ -1033,6 +1048,18 @@ public class FlameUI extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField7ActionPerformed
 
+    private void P2P3Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P3Button1ActionPerformed
+       P2Panel4.removeAll();
+       P2Panel4.add(P2P4Panel1);
+       P2Panel4.validate();
+    }//GEN-LAST:event_P2P3Button1ActionPerformed
+
+    private void P2P3Button3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P3Button3ActionPerformed
+       P2Panel4.removeAll();
+       P2Panel4.add(P2P4Panel3);
+       P2Panel4.validate();
+    }//GEN-LAST:event_P2P3Button3ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1069,7 +1096,7 @@ public class FlameUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel BaseLayout;
+    public javax.swing.JPanel BaseLayout;
     private javax.swing.JDialog MyInfoDialog;
     private javax.swing.JDialog NewItemDialog;
     private javax.swing.JButton P1Button;
@@ -1097,7 +1124,7 @@ public class FlameUI extends javax.swing.JFrame {
     private javax.swing.JPanel P2Panel1;
     private javax.swing.JPanel P2Panel2;
     private javax.swing.JPanel P2Panel3;
-    private javax.swing.JPanel P2Panel4;
+    public javax.swing.JPanel P2Panel4;
     private javax.swing.JButton P3P1Button1;
     private javax.swing.JButton P3P1Button2;
     private javax.swing.JButton P3P1Button3;
@@ -1130,8 +1157,6 @@ public class FlameUI extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
-    private javax.swing.JPanel jPanel18;
-    private javax.swing.JPanel jPanel19;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
