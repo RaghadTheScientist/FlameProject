@@ -1,17 +1,8 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JFrame.java to edit this template
- */
-
-/**
- *
- * @author sabas
- */
+import java.sql.*;
 public class FlameUI extends javax.swing.JFrame {
-
-    /**
-     * Creates new form FlameUI
-     */
+public static final String  DB_URL = "jdbc:mysql://localhost/FLAME";
+public static final String  USER = "root";
+public static final String  PASS = "1234";   
     public FlameUI() {
         initComponents();
     }
@@ -993,6 +984,7 @@ public class FlameUI extends javax.swing.JFrame {
     private void P2P3Button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P3Button2ActionPerformed
        P2Panel4.removeAll();
        P2Panel4.add(P2P4Panel2);
+       P2Panel4.repaint();
        P2Panel4.validate();
     }//GEN-LAST:event_P2P3Button2ActionPerformed
 
@@ -1051,12 +1043,14 @@ public class FlameUI extends javax.swing.JFrame {
     private void P2P3Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P3Button1ActionPerformed
        P2Panel4.removeAll();
        P2Panel4.add(P2P4Panel1);
+       P2Panel4.repaint();
        P2Panel4.validate();
     }//GEN-LAST:event_P2P3Button1ActionPerformed
 
     private void P2P3Button3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P3Button3ActionPerformed
        P2Panel4.removeAll();
        P2Panel4.add(P2P4Panel3);
+       P2Panel4.repaint();
        P2Panel4.validate();
     }//GEN-LAST:event_P2P3Button3ActionPerformed
 
@@ -1069,30 +1063,14 @@ public class FlameUI extends javax.swing.JFrame {
         /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
          * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
          */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(FlameUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(FlameUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(FlameUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(FlameUI.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
+      
+         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new FlameUI().setVisible(true);
             }
         });
+            
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
