@@ -3,9 +3,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Conn {
-    public static final String  DB_URL = "jdbc:mysql://localhost/FLAME";
+    public static final String  DB_URL = "jdbc:mysql://localhost:3306/sys";
     public static final String  USER = "root";
-    public static final String  PASS = "1234";
+    public static final String  PASS = "2n4@060";
     
     public static void main(String args[]) {
         try {
