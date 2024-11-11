@@ -1,13 +1,219 @@
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.sql.*;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 public class FlameUI extends javax.swing.JFrame {
 public static final String  DB_URL = "jdbc:mysql://localhost:3306/sys";
 public static final String  USER = "root";
 public static final String  PASS = "2n4@060";
+
 public static int ID ;
 public static String EmployeeType;
+
+//NADA========================================================================================
+ //private JButton btnMyInformation, btnViewInvoices, btnCreateNewItem;
+ private JButton[] btnCompleteInvoice = new JButton[4];
+ private JTextPane[] textPaneInvoiceDetails= new JTextPane[4];
+ private JPanel[] invoicePanels = new JPanel[4];
+ private DefaultTableModel model;
+ //private JPanel centerPanel;
+ private InvoiceManager invoiceManager;
+ //NADA========================================================================================
     public FlameUI() {
         initComponents();
+   
+   //NADA========================================================================================    
+   //this for Food Preparer Page NADA
+        
+        btnMyInformation = new JButton("My Information");
+        btnViewInvoices = new JButton("View Invoices");
+        btnCreateNewItem = new JButton("Create New Item");
+        
+        btnCompleteInvoice[0]=new JButton();
+        btnCompleteInvoice[1]=new JButton();
+        btnCompleteInvoice[2]=new JButton();
+        btnCompleteInvoice[3]=new JButton();
+        
+        textPaneInvoiceDetails[0] = new JTextPane();
+        textPaneInvoiceDetails[1] = new JTextPane();
+        textPaneInvoiceDetails[2] = new JTextPane();
+        textPaneInvoiceDetails[3] = new JTextPane();
+        
+        invoicePanels[0]= new JPanel();
+        invoicePanels[1]= new JPanel();
+        invoicePanels[2]= new JPanel();
+        invoicePanels[3]= new JPanel();
+       
+        invoiceManager = new InvoiceManager();
+        //NADA========================================================================================
+        
+        //NADA========================================================================================
+        // top
+        JPanel topPanel = new JPanel(new FlowLayout());
+        topPanel.add(btnMyInformation);
+        topPanel.add(btnViewInvoices);
+        topPanel.add(btnCreateNewItem);
+        getContentPane().add(topPanel, BorderLayout.NORTH);
+
+        
+         //middle
+        centerPanel = new JPanel(new GridLayout(2, 2, 10, 10)); 
+        for (int i = 0; i < 4; i++) {
+            invoicePanels[i] = new JPanel(new BorderLayout()); 
+            
+           
+            btnCompleteInvoice[i] = new JButton("Complete");
+            
+           
+            textPaneInvoiceDetails[i] = new JTextPane();
+            textPaneInvoiceDetails[i].setText("Invoice Details #" + (i + 1)); 
+            textPaneInvoiceDetails[i].setEditable(false); 
+            JScrollPane scrollPane = new JScrollPane(textPaneInvoiceDetails[i]);
+
+           
+            invoicePanels[i].add(scrollPane, BorderLayout.CENTER);
+            invoicePanels[i].add(btnCompleteInvoice[i], BorderLayout.SOUTH);
+            
+            centerPanel.add(invoicePanels[i]);
+        }
+        getContentPane().add(centerPanel, BorderLayout.CENTER);
+        
+        
+        //bottom
+        //DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+        //tableRemainingInvoices = new JTable(model);
+        //JScrollPane scrollPaneTable = new JScrollPane(tableRemainingInvoices);
+        //getContentPane().add(scrollPaneTable, BorderLayout.SOUTH);
+
+        
+        // model = (DefaultTableModel)tableRemainingInvoice.getModel();
+        //tableRemainingInvoice.setModel(model); 
+        
+         String query = "SELECT * FROM INVOICE WHERE Completion = false";
+        
+         try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query)) {
+             Statement st= conn.createStatement();
+            ResultSet rs = st.executeQuery(query);
+            
+            while (rs.next()) {
+               
+                    String Invoice_ID=String.valueOf( rs.getInt("Invoice_ID"));
+                    
+                   //String Completion= rs.getBoolean("Completion");
+                   
+                   String Order_Type= rs.getString("Order_Type");
+                
+                        
+                    String []tbData = {Invoice_ID, Order_Type};
+              model = (DefaultTableModel)tableRemainingInvoice.getModel();
+             
+            }
+        } catch (SQLException ex) {
+        Logger.getLogger(FlameUI.class.getName()).log(Level.SEVERE, null, ex);
     }
+     //NADA========================================================================================       
+
+            
+      //NADA========================================================================================  
+        btnMyInformation.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayMyInformation();
+            }
+        });
+        
+         btnViewInvoices.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                displayAllInvoices();
+            }
+        });
+
+        btnCreateNewItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                createNewItem();
+            }
+        });
+
+        for (int i = 0; i < 4; i++) {
+            final int index = i;
+            btnCompleteInvoice[i].addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    completeInvoice(index);
+                }
+            });
+        }
+        loadPendingInvoices();
+    }
+    //NADA========================================================================================
+
+    //NADA========================================================================================
+    private void displayMyInformation() {
+        JOptionPane.showMessageDialog(this, "Display My Information - Fetch from DB");
+    }
+
+    private void displayAllInvoices() {
+        JOptionPane.showMessageDialog(this, "Display All Invoices - Fetch from DB");
+    }
+
+    private void createNewItem() {
+        JOptionPane.showMessageDialog(this, "Create New Item - Add to DB");
+    }
+
+    private void completeInvoice(int invoiceIndex) {
+        try {
+            int invoiceId = Integer.parseInt(textPaneInvoiceDetails[invoiceIndex].getName());
+            invoiceManager.completeInvoice(invoiceId);
+            JOptionPane.showMessageDialog(this, "Invoice #" + invoiceId + " completed.");
+            loadPendingInvoices(); 
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error completing invoice.");
+        }
+    }
+
+    private void loadPendingInvoices() {
+        try {
+            List<Invoice> pendingInvoices = invoiceManager.getPendingInvoices();
+            for (int i = 0; i < 4; i++) {
+                if (i < pendingInvoices.size()) {
+                    Invoice invoice = pendingInvoices.get(i);
+                    textPaneInvoiceDetails[i].setText("Invoice ID: " + invoice.getInvoiceId() +
+                            "\nTotal Price: " + invoice.getTotalPrice() +
+                            "\nDate: " + invoice.getInvoiceDate());
+                    textPaneInvoiceDetails[i].setName(String.valueOf(invoice.getInvoiceId()));
+                    btnCompleteInvoice[i].setEnabled(true);
+                } else {
+                    textPaneInvoiceDetails[i].setText("No Invoice");
+                    textPaneInvoiceDetails[i].setName(null);
+                    btnCompleteInvoice[i].setEnabled(false);
+                }
+            }
+            updateRemainingInvoicesTable(pendingInvoices.subList(Math.min(4, pendingInvoices.size()), pendingInvoices.size()));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error loading pending invoices.");
+        }
+    }
+
+    private void updateRemainingInvoicesTable(List<Invoice> remainingInvoices) {
+        DefaultTableModel model = (DefaultTableModel) tableRemainingInvoice.getModel();
+        model.setRowCount(0); 
+        for (Invoice invoice : remainingInvoices) {
+            model.addRow(new Object[]{invoice.getInvoiceId(), "Pending", invoice.getTotalPrice()});
+        }
+    }
+    //NADA========================================================================================
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -78,31 +284,31 @@ public static String EmployeeType;
         P2P4Panel3 = new javax.swing.JPanel();
         P2P4P3Label = new javax.swing.JLabel();
         Page3Panel = new javax.swing.JPanel();
-        P3Panel1 = new javax.swing.JPanel();
-        P3P1Button1 = new javax.swing.JButton();
-        P3P1Button2 = new javax.swing.JButton();
-        P3P1Button3 = new javax.swing.JButton();
+        topPanel = new javax.swing.JPanel();
+        btnMyInformation = new javax.swing.JButton();
+        btnViewInvoices = new javax.swing.JButton();
+        btnCreateNewItem = new javax.swing.JButton();
         P2P1Button4 = new javax.swing.JButton();
-        P3Panel2 = new javax.swing.JPanel();
-        P3P2Panel1 = new javax.swing.JPanel();
-        jButton10 = new javax.swing.JButton();
+        centerPanel = new javax.swing.JPanel();
+        invoicePanel0 = new javax.swing.JPanel();
+        btnCompleteInvoice0 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextPane1 = new javax.swing.JTextPane();
-        P3P2Panel2 = new javax.swing.JPanel();
-        jButton14 = new javax.swing.JButton();
+        textPaneInvoiceDetails0 = new javax.swing.JTextPane();
+        invoicePanel1 = new javax.swing.JPanel();
+        btnCompleteInvoice1 = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextPane2 = new javax.swing.JTextPane();
-        P3P2Panel3 = new javax.swing.JPanel();
-        jButton15 = new javax.swing.JButton();
+        textPaneInvoiceDetails1 = new javax.swing.JTextPane();
+        invoicePanel2 = new javax.swing.JPanel();
+        btnCompleteInvoice2 = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
-        jTextPane3 = new javax.swing.JTextPane();
-        P3P2Panel4 = new javax.swing.JPanel();
-        jButton16 = new javax.swing.JButton();
+        textPaneInvoiceDetails2 = new javax.swing.JTextPane();
+        invoicePanel3 = new javax.swing.JPanel();
+        btnCompleteInvoice3 = new javax.swing.JButton();
         jScrollPane4 = new javax.swing.JScrollPane();
-        jTextPane4 = new javax.swing.JTextPane();
+        textPaneInvoiceDetails3 = new javax.swing.JTextPane();
         P3Panel3 = new javax.swing.JPanel();
         P3P3ScrollPane = new javax.swing.JScrollPane();
-        P3P3Table = new javax.swing.JTable();
+        tableRemainingInvoice = new javax.swing.JTable();
         P3P3Label1 = new javax.swing.JLabel();
 
         jLabel1.setText("First Name");
@@ -781,36 +987,39 @@ public static String EmployeeType;
 
         BaseLayout.add(Page2Panel, "Page2");
 
-        P3Panel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
-        P3Panel1.setPreferredSize(new java.awt.Dimension(446, 54));
+        topPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        topPanel.setPreferredSize(new java.awt.Dimension(446, 54));
 
-        P3P1Button1.setBackground(new java.awt.Color(226, 226, 226));
-        P3P1Button1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
-        P3P1Button1.setText("My Information");
-        P3P1Button1.setPreferredSize(new java.awt.Dimension(75, 40));
-        P3P1Button1.addActionListener(new java.awt.event.ActionListener() {
+        btnMyInformation.setBackground(new java.awt.Color(226, 226, 226));
+        btnMyInformation.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
+        btnMyInformation.setText("My Information");
+        btnMyInformation.setName("btnMyInformation"); // NOI18N
+        btnMyInformation.setPreferredSize(new java.awt.Dimension(75, 40));
+        btnMyInformation.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                P3P1Button1ActionPerformed(evt);
+                btnMyInformationActionPerformed(evt);
             }
         });
 
-        P3P1Button2.setBackground(new java.awt.Color(226, 226, 226));
-        P3P1Button2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
-        P3P1Button2.setText("View invoices");
-        P3P1Button2.setPreferredSize(new java.awt.Dimension(75, 40));
-        P3P1Button2.addActionListener(new java.awt.event.ActionListener() {
+        btnViewInvoices.setBackground(new java.awt.Color(226, 226, 226));
+        btnViewInvoices.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
+        btnViewInvoices.setText("View invoices");
+        btnViewInvoices.setActionCommand("View Invoices");
+        btnViewInvoices.setPreferredSize(new java.awt.Dimension(75, 40));
+        btnViewInvoices.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                P3P1Button2ActionPerformed(evt);
+                btnViewInvoicesActionPerformed(evt);
             }
         });
 
-        P3P1Button3.setBackground(new java.awt.Color(226, 226, 226));
-        P3P1Button3.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
-        P3P1Button3.setText("Create new Item");
-        P3P1Button3.setPreferredSize(new java.awt.Dimension(75, 40));
-        P3P1Button3.addActionListener(new java.awt.event.ActionListener() {
+        btnCreateNewItem.setBackground(new java.awt.Color(226, 226, 226));
+        btnCreateNewItem.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
+        btnCreateNewItem.setText("Create new Item");
+        btnCreateNewItem.setActionCommand("Create New Item");
+        btnCreateNewItem.setPreferredSize(new java.awt.Dimension(75, 40));
+        btnCreateNewItem.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                P3P1Button3ActionPerformed(evt);
+                btnCreateNewItemActionPerformed(evt);
             }
         });
 
@@ -824,247 +1033,244 @@ public static String EmployeeType;
             }
         });
 
-        javax.swing.GroupLayout P3Panel1Layout = new javax.swing.GroupLayout(P3Panel1);
-        P3Panel1.setLayout(P3Panel1Layout);
-        P3Panel1Layout.setHorizontalGroup(
-            P3Panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P3Panel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout topPanelLayout = new javax.swing.GroupLayout(topPanel);
+        topPanel.setLayout(topPanelLayout);
+        topPanelLayout.setHorizontalGroup(
+            topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(topPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(P3P1Button1, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnMyInformation, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(P3P1Button2, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnViewInvoices, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addComponent(P3P1Button3, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnCreateNewItem, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(P2P1Button4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
-        P3Panel1Layout.setVerticalGroup(
-            P3Panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P3Panel1Layout.createSequentialGroup()
+        topPanelLayout.setVerticalGroup(
+            topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(topPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(P3Panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(P3P1Button1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(P3P1Button2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(P3P1Button3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(topPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(btnMyInformation, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnViewInvoices, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btnCreateNewItem, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(P2P1Button4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
-        P3Panel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
-        P3Panel2.setPreferredSize(new java.awt.Dimension(910, 300));
+        centerPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        centerPanel.setPreferredSize(new java.awt.Dimension(910, 300));
 
-        P3P2Panel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
-        P3P2Panel1.setPreferredSize(new java.awt.Dimension(216, 252));
-        P3P2Panel1.setVerifyInputWhenFocusTarget(false);
+        invoicePanel0.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        invoicePanel0.setPreferredSize(new java.awt.Dimension(216, 252));
+        invoicePanel0.setVerifyInputWhenFocusTarget(false);
 
-        jButton10.setText("Complate");
-        jButton10.addActionListener(new java.awt.event.ActionListener() {
+        btnCompleteInvoice0.setText("Complate");
+        btnCompleteInvoice0.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton10ActionPerformed(evt);
+                btnCompleteInvoice0ActionPerformed(evt);
             }
         });
 
-        jTextPane1.setEditable(false);
-        jTextPane1.setBackground(java.awt.SystemColor.controlHighlight);
-        jTextPane1.setDisabledTextColor(new java.awt.Color(204, 204, 204));
-        jScrollPane1.setViewportView(jTextPane1);
+        textPaneInvoiceDetails0.setEditable(false);
+        textPaneInvoiceDetails0.setBackground(java.awt.SystemColor.controlHighlight);
+        textPaneInvoiceDetails0.setDisabledTextColor(new java.awt.Color(204, 204, 204));
+        jScrollPane1.setViewportView(textPaneInvoiceDetails0);
 
-        javax.swing.GroupLayout P3P2Panel1Layout = new javax.swing.GroupLayout(P3P2Panel1);
-        P3P2Panel1.setLayout(P3P2Panel1Layout);
-        P3P2Panel1Layout.setHorizontalGroup(
-            P3P2Panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P3P2Panel1Layout.createSequentialGroup()
+        javax.swing.GroupLayout invoicePanel0Layout = new javax.swing.GroupLayout(invoicePanel0);
+        invoicePanel0.setLayout(invoicePanel0Layout);
+        invoicePanel0Layout.setHorizontalGroup(
+            invoicePanel0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(invoicePanel0Layout.createSequentialGroup()
                 .addGap(40, 40, 40)
-                .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnCompleteInvoice0, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(52, Short.MAX_VALUE))
-            .addGroup(P3P2Panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(P3P2Panel1Layout.createSequentialGroup()
+            .addGroup(invoicePanel0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(invoicePanel0Layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
                     .addContainerGap()))
         );
-        P3P2Panel1Layout.setVerticalGroup(
-            P3P2Panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, P3P2Panel1Layout.createSequentialGroup()
+        invoicePanel0Layout.setVerticalGroup(
+            invoicePanel0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, invoicePanel0Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton10, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnCompleteInvoice0, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addGroup(P3P2Panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(P3P2Panel1Layout.createSequentialGroup()
+            .addGroup(invoicePanel0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(invoicePanel0Layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap(46, Short.MAX_VALUE)))
         );
 
-        P3P2Panel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
-        P3P2Panel2.setPreferredSize(new java.awt.Dimension(216, 252));
-        P3P2Panel2.setVerifyInputWhenFocusTarget(false);
+        invoicePanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        invoicePanel1.setPreferredSize(new java.awt.Dimension(216, 252));
+        invoicePanel1.setVerifyInputWhenFocusTarget(false);
 
-        jButton14.setText("Complate");
-        jButton14.addActionListener(new java.awt.event.ActionListener() {
+        btnCompleteInvoice1.setText("Complate");
+        btnCompleteInvoice1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton14ActionPerformed(evt);
+                btnCompleteInvoice1ActionPerformed(evt);
             }
         });
 
-        jTextPane2.setEditable(false);
-        jTextPane2.setBackground(java.awt.SystemColor.controlHighlight);
-        jScrollPane2.setViewportView(jTextPane2);
+        textPaneInvoiceDetails1.setEditable(false);
+        textPaneInvoiceDetails1.setBackground(java.awt.SystemColor.controlHighlight);
+        jScrollPane2.setViewportView(textPaneInvoiceDetails1);
 
-        javax.swing.GroupLayout P3P2Panel2Layout = new javax.swing.GroupLayout(P3P2Panel2);
-        P3P2Panel2.setLayout(P3P2Panel2Layout);
-        P3P2Panel2Layout.setHorizontalGroup(
-            P3P2Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P3P2Panel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout invoicePanel1Layout = new javax.swing.GroupLayout(invoicePanel1);
+        invoicePanel1.setLayout(invoicePanel1Layout);
+        invoicePanel1Layout.setHorizontalGroup(
+            invoicePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(invoicePanel1Layout.createSequentialGroup()
                 .addGap(42, 42, 42)
-                .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnCompleteInvoice1, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(42, Short.MAX_VALUE))
-            .addGroup(P3P2Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(P3P2Panel2Layout.createSequentialGroup()
+            .addGroup(invoicePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(invoicePanel1Layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
                     .addContainerGap()))
         );
-        P3P2Panel2Layout.setVerticalGroup(
-            P3P2Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, P3P2Panel2Layout.createSequentialGroup()
+        invoicePanel1Layout.setVerticalGroup(
+            invoicePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, invoicePanel1Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton14, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnCompleteInvoice1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addGroup(P3P2Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(P3P2Panel2Layout.createSequentialGroup()
+            .addGroup(invoicePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(invoicePanel1Layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap(46, Short.MAX_VALUE)))
         );
 
-        P3P2Panel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
-        P3P2Panel3.setPreferredSize(new java.awt.Dimension(216, 252));
-        P3P2Panel3.setVerifyInputWhenFocusTarget(false);
+        invoicePanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        invoicePanel2.setPreferredSize(new java.awt.Dimension(216, 252));
+        invoicePanel2.setVerifyInputWhenFocusTarget(false);
 
-        jButton15.setText("Complate");
-        jButton15.addActionListener(new java.awt.event.ActionListener() {
+        btnCompleteInvoice2.setText("Complate");
+        btnCompleteInvoice2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton15ActionPerformed(evt);
+                btnCompleteInvoice2ActionPerformed(evt);
             }
         });
 
-        jTextPane3.setEditable(false);
-        jTextPane3.setBackground(java.awt.SystemColor.controlHighlight);
-        jScrollPane3.setViewportView(jTextPane3);
+        textPaneInvoiceDetails2.setEditable(false);
+        textPaneInvoiceDetails2.setBackground(java.awt.SystemColor.controlHighlight);
+        jScrollPane3.setViewportView(textPaneInvoiceDetails2);
 
-        javax.swing.GroupLayout P3P2Panel3Layout = new javax.swing.GroupLayout(P3P2Panel3);
-        P3P2Panel3.setLayout(P3P2Panel3Layout);
-        P3P2Panel3Layout.setHorizontalGroup(
-            P3P2Panel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P3P2Panel3Layout.createSequentialGroup()
+        javax.swing.GroupLayout invoicePanel2Layout = new javax.swing.GroupLayout(invoicePanel2);
+        invoicePanel2.setLayout(invoicePanel2Layout);
+        invoicePanel2Layout.setHorizontalGroup(
+            invoicePanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(invoicePanel2Layout.createSequentialGroup()
                 .addGap(40, 40, 40)
-                .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnCompleteInvoice2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(44, Short.MAX_VALUE))
-            .addGroup(P3P2Panel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(P3P2Panel3Layout.createSequentialGroup()
+            .addGroup(invoicePanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(invoicePanel2Layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
                     .addContainerGap()))
         );
-        P3P2Panel3Layout.setVerticalGroup(
-            P3P2Panel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, P3P2Panel3Layout.createSequentialGroup()
+        invoicePanel2Layout.setVerticalGroup(
+            invoicePanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, invoicePanel2Layout.createSequentialGroup()
                 .addContainerGap(165, Short.MAX_VALUE)
-                .addComponent(jButton15, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnCompleteInvoice2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addGroup(P3P2Panel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(P3P2Panel3Layout.createSequentialGroup()
+            .addGroup(invoicePanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(invoicePanel2Layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap(46, Short.MAX_VALUE)))
         );
 
-        P3P2Panel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
-        P3P2Panel4.setPreferredSize(new java.awt.Dimension(216, 252));
-        P3P2Panel4.setVerifyInputWhenFocusTarget(false);
+        invoicePanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
+        invoicePanel3.setPreferredSize(new java.awt.Dimension(216, 252));
+        invoicePanel3.setVerifyInputWhenFocusTarget(false);
 
-        jButton16.setText("Complate");
-        jButton16.addActionListener(new java.awt.event.ActionListener() {
+        btnCompleteInvoice3.setText("Complate");
+        btnCompleteInvoice3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton16ActionPerformed(evt);
+                btnCompleteInvoice3ActionPerformed(evt);
             }
         });
 
-        jTextPane4.setEditable(false);
-        jTextPane4.setBackground(java.awt.SystemColor.controlHighlight);
-        jScrollPane4.setViewportView(jTextPane4);
+        textPaneInvoiceDetails3.setEditable(false);
+        textPaneInvoiceDetails3.setBackground(java.awt.SystemColor.controlHighlight);
+        jScrollPane4.setViewportView(textPaneInvoiceDetails3);
 
-        javax.swing.GroupLayout P3P2Panel4Layout = new javax.swing.GroupLayout(P3P2Panel4);
-        P3P2Panel4.setLayout(P3P2Panel4Layout);
-        P3P2Panel4Layout.setHorizontalGroup(
-            P3P2Panel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P3P2Panel4Layout.createSequentialGroup()
+        javax.swing.GroupLayout invoicePanel3Layout = new javax.swing.GroupLayout(invoicePanel3);
+        invoicePanel3.setLayout(invoicePanel3Layout);
+        invoicePanel3Layout.setHorizontalGroup(
+            invoicePanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(invoicePanel3Layout.createSequentialGroup()
                 .addGap(40, 40, 40)
-                .addComponent(jButton16, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnCompleteInvoice3, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(44, Short.MAX_VALUE))
-            .addGroup(P3P2Panel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(P3P2Panel4Layout.createSequentialGroup()
+            .addGroup(invoicePanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(invoicePanel3Layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
                     .addContainerGap()))
         );
-        P3P2Panel4Layout.setVerticalGroup(
-            P3P2Panel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, P3P2Panel4Layout.createSequentialGroup()
+        invoicePanel3Layout.setVerticalGroup(
+            invoicePanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, invoicePanel3Layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jButton16, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(btnCompleteInvoice3, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
-            .addGroup(P3P2Panel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(P3P2Panel4Layout.createSequentialGroup()
+            .addGroup(invoicePanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(invoicePanel3Layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap(46, Short.MAX_VALUE)))
         );
 
-        javax.swing.GroupLayout P3Panel2Layout = new javax.swing.GroupLayout(P3Panel2);
-        P3Panel2.setLayout(P3Panel2Layout);
-        P3Panel2Layout.setHorizontalGroup(
-            P3Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P3Panel2Layout.createSequentialGroup()
+        javax.swing.GroupLayout centerPanelLayout = new javax.swing.GroupLayout(centerPanel);
+        centerPanel.setLayout(centerPanelLayout);
+        centerPanelLayout.setHorizontalGroup(
+            centerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(centerPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(P3P2Panel1, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(invoicePanel0, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(P3P2Panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
+                .addComponent(invoicePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(P3P2Panel3, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
+                .addComponent(invoicePanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(P3P2Panel4, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
+                .addComponent(invoicePanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
                 .addGap(16, 16, 16))
         );
-        P3Panel2Layout.setVerticalGroup(
-            P3Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, P3Panel2Layout.createSequentialGroup()
+        centerPanelLayout.setVerticalGroup(
+            centerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, centerPanelLayout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(P3Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(P3P2Panel3, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
-                    .addComponent(P3P2Panel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
-                    .addComponent(P3P2Panel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
-                    .addComponent(P3P2Panel4, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE))
+                .addGroup(centerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(invoicePanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                    .addComponent(invoicePanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                    .addComponent(invoicePanel0, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                    .addComponent(invoicePanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE))
                 .addGap(312, 312, 312))
         );
 
         P3Panel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
 
-        P3P3Table.setModel(new javax.swing.table.DefaultTableModel(
+        tableRemainingInvoice.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Invoice_ID", "Order_Type"
             }
         ));
-        P3P3Table.setGridColor(new java.awt.Color(153, 153, 153));
-        P3P3ScrollPane.setViewportView(P3P3Table);
+        tableRemainingInvoice.setGridColor(new java.awt.Color(153, 153, 153));
+        P3P3ScrollPane.setViewportView(tableRemainingInvoice);
 
         P3P3Label1.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
         P3P3Label1.setText("Invoice Waitlist");
@@ -1095,16 +1301,16 @@ public static String EmployeeType;
         Page3Panel.setLayout(Page3PanelLayout);
         Page3PanelLayout.setHorizontalGroup(
             Page3PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(P3Panel1, javax.swing.GroupLayout.DEFAULT_SIZE, 910, Short.MAX_VALUE)
-            .addComponent(P3Panel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(topPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 910, Short.MAX_VALUE)
+            .addComponent(centerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(P3Panel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         Page3PanelLayout.setVerticalGroup(
             Page3PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(Page3PanelLayout.createSequentialGroup()
-                .addComponent(P3Panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(topPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(P3Panel2, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(centerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 225, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(P3Panel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -1136,6 +1342,11 @@ public static String EmployeeType;
         BaseLayout.add(Page2Panel);
         BaseLayout.validate();
         }
+         if(P1ComboBox.getSelectedItem().toString().equals("Food Preparer")){
+        BaseLayout.removeAll();
+        BaseLayout.add(Page3Panel);
+        BaseLayout.validate();
+        }
     }//GEN-LAST:event_P1ButtonActionPerformed
 
     private void P2P1Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P1Button1ActionPerformed
@@ -1157,33 +1368,33 @@ public static String EmployeeType;
         // TODO add your handling code here:
     }//GEN-LAST:event_P2P2P2Button1ActionPerformed
 
-    private void P3P1Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P3P1Button1ActionPerformed
+    private void btnMyInformationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMyInformationActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_P3P1Button1ActionPerformed
+    }//GEN-LAST:event_btnMyInformationActionPerformed
 
-    private void jButton10ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton10ActionPerformed
+    private void btnCompleteInvoice0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteInvoice0ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton10ActionPerformed
+    }//GEN-LAST:event_btnCompleteInvoice0ActionPerformed
 
-    private void jButton14ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton14ActionPerformed
+    private void btnCompleteInvoice1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteInvoice1ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton14ActionPerformed
+    }//GEN-LAST:event_btnCompleteInvoice1ActionPerformed
 
-    private void jButton15ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton15ActionPerformed
+    private void btnCompleteInvoice2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteInvoice2ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton15ActionPerformed
+    }//GEN-LAST:event_btnCompleteInvoice2ActionPerformed
 
-    private void jButton16ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton16ActionPerformed
+    private void btnCompleteInvoice3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteInvoice3ActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton16ActionPerformed
+    }//GEN-LAST:event_btnCompleteInvoice3ActionPerformed
 
-    private void P3P1Button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P3P1Button2ActionPerformed
+    private void btnViewInvoicesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewInvoicesActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_P3P1Button2ActionPerformed
+    }//GEN-LAST:event_btnViewInvoicesActionPerformed
 
-    private void P3P1Button3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P3P1Button3ActionPerformed
+    private void btnCreateNewItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateNewItemActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_P3P1Button3ActionPerformed
+    }//GEN-LAST:event_btnCreateNewItemActionPerformed
 
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
@@ -1296,30 +1507,28 @@ public static String EmployeeType;
     private javax.swing.JPanel P2Panel2;
     private javax.swing.JPanel P2Panel3;
     public javax.swing.JPanel P2Panel4;
-    private javax.swing.JButton P3P1Button1;
-    private javax.swing.JButton P3P1Button2;
-    private javax.swing.JButton P3P1Button3;
-    private javax.swing.JPanel P3P2Panel1;
-    private javax.swing.JPanel P3P2Panel2;
-    private javax.swing.JPanel P3P2Panel3;
-    private javax.swing.JPanel P3P2Panel4;
     private javax.swing.JLabel P3P3Label1;
     private javax.swing.JScrollPane P3P3ScrollPane;
-    private javax.swing.JTable P3P3Table;
-    private javax.swing.JPanel P3Panel1;
-    private javax.swing.JPanel P3Panel2;
     private javax.swing.JPanel P3Panel3;
     private javax.swing.JPanel Page1Panel;
     private javax.swing.JPanel Page2Panel;
     private javax.swing.JPanel Page3Panel;
     private javax.swing.JDialog PaymentTypeDiaglog;
     private javax.swing.JDialog ViewInvoicesDialog;
+    private javax.swing.JButton btnCompleteInvoice0;
+    private javax.swing.JButton btnCompleteInvoice1;
+    private javax.swing.JButton btnCompleteInvoice2;
+    private javax.swing.JButton btnCompleteInvoice3;
+    private javax.swing.JButton btnCreateNewItem;
+    private javax.swing.JButton btnMyInformation;
+    private javax.swing.JButton btnViewInvoices;
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JPanel centerPanel;
+    private javax.swing.JPanel invoicePanel0;
+    private javax.swing.JPanel invoicePanel1;
+    private javax.swing.JPanel invoicePanel2;
+    private javax.swing.JPanel invoicePanel3;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton10;
-    private javax.swing.JButton jButton14;
-    private javax.swing.JButton jButton15;
-    private javax.swing.JButton jButton16;
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
@@ -1353,9 +1562,11 @@ public static String EmployeeType;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
-    private javax.swing.JTextPane jTextPane1;
-    private javax.swing.JTextPane jTextPane2;
-    private javax.swing.JTextPane jTextPane3;
-    private javax.swing.JTextPane jTextPane4;
+    private javax.swing.JTable tableRemainingInvoice;
+    private javax.swing.JTextPane textPaneInvoiceDetails0;
+    private javax.swing.JTextPane textPaneInvoiceDetails1;
+    private javax.swing.JTextPane textPaneInvoiceDetails2;
+    private javax.swing.JTextPane textPaneInvoiceDetails3;
+    private javax.swing.JPanel topPanel;
     // End of variables declaration//GEN-END:variables
 }

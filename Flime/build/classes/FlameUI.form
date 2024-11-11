@@ -1189,17 +1189,17 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="P3Panel1" alignment="0" pref="910" max="32767" attributes="0"/>
-                  <Component id="P3Panel2" alignment="0" max="32767" attributes="0"/>
+                  <Component id="topPanel" alignment="0" pref="910" max="32767" attributes="0"/>
+                  <Component id="centerPanel" alignment="0" max="32767" attributes="0"/>
                   <Component id="P3Panel3" alignment="0" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
-                      <Component id="P3Panel1" min="-2" max="-2" attributes="0"/>
+                      <Component id="topPanel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="P3Panel2" min="-2" pref="225" max="-2" attributes="0"/>
+                      <Component id="centerPanel" min="-2" pref="225" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="P3Panel3" max="32767" attributes="0"/>
                   </Group>
@@ -1207,7 +1207,7 @@
             </DimensionLayout>
           </Layout>
           <SubComponents>
-            <Container class="javax.swing.JPanel" name="P3Panel1">
+            <Container class="javax.swing.JPanel" name="topPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
@@ -1226,11 +1226,11 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="P3P1Button1" min="-2" pref="207" max="-2" attributes="0"/>
+                          <Component id="btnMyInformation" min="-2" pref="207" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="P3P1Button2" min="-2" pref="207" max="-2" attributes="0"/>
+                          <Component id="btnViewInvoices" min="-2" pref="207" max="-2" attributes="0"/>
                           <EmptySpace type="separate" max="-2" attributes="0"/>
-                          <Component id="P3P1Button3" min="-2" pref="207" max="-2" attributes="0"/>
+                          <Component id="btnCreateNewItem" min="-2" pref="207" max="-2" attributes="0"/>
                           <EmptySpace max="32767" attributes="0"/>
                           <Component id="P2P1Button4" min="-2" pref="60" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
@@ -1242,9 +1242,9 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="3" attributes="0">
-                              <Component id="P3P1Button1" alignment="3" max="32767" attributes="0"/>
-                              <Component id="P3P1Button2" alignment="3" max="32767" attributes="0"/>
-                              <Component id="P3P1Button3" alignment="3" max="32767" attributes="0"/>
+                              <Component id="btnMyInformation" alignment="3" max="32767" attributes="0"/>
+                              <Component id="btnViewInvoices" alignment="3" max="32767" attributes="0"/>
+                              <Component id="btnCreateNewItem" alignment="3" max="32767" attributes="0"/>
                               <Component id="P2P1Button4" alignment="3" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace max="-2" attributes="0"/>
@@ -1253,7 +1253,7 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Component class="javax.swing.JButton" name="P3P1Button1">
+                <Component class="javax.swing.JButton" name="btnMyInformation">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="e2" green="e2" red="e2" type="rgb"/>
@@ -1262,15 +1262,16 @@
                       <Font name="Segoe UI Semibold" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="My Information"/>
+                    <Property name="name" type="java.lang.String" value="btnMyInformation" noResource="true"/>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                       <Dimension value="[75, 40]"/>
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="P3P1Button1ActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnMyInformationActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JButton" name="P3P1Button2">
+                <Component class="javax.swing.JButton" name="btnViewInvoices">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="e2" green="e2" red="e2" type="rgb"/>
@@ -1279,15 +1280,16 @@
                       <Font name="Segoe UI Semibold" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="View invoices"/>
+                    <Property name="actionCommand" type="java.lang.String" value="View Invoices"/>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                       <Dimension value="[75, 40]"/>
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="P3P1Button2ActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnViewInvoicesActionPerformed"/>
                   </Events>
                 </Component>
-                <Component class="javax.swing.JButton" name="P3P1Button3">
+                <Component class="javax.swing.JButton" name="btnCreateNewItem">
                   <Properties>
                     <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                       <Color blue="e2" green="e2" red="e2" type="rgb"/>
@@ -1296,12 +1298,13 @@
                       <Font name="Segoe UI Semibold" size="14" style="0"/>
                     </Property>
                     <Property name="text" type="java.lang.String" value="Create new Item"/>
+                    <Property name="actionCommand" type="java.lang.String" value="Create New Item"/>
                     <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
                       <Dimension value="[75, 40]"/>
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="P3P1Button3ActionPerformed"/>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCreateNewItemActionPerformed"/>
                   </Events>
                 </Component>
                 <Component class="javax.swing.JButton" name="P2P1Button4">
@@ -1323,7 +1326,7 @@
                 </Component>
               </SubComponents>
             </Container>
-            <Container class="javax.swing.JPanel" name="P3Panel2">
+            <Container class="javax.swing.JPanel" name="centerPanel">
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
@@ -1342,13 +1345,13 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="P3P2Panel1" min="-2" pref="223" max="-2" attributes="0"/>
+                          <Component id="invoicePanel0" min="-2" pref="223" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="P3P2Panel2" pref="215" max="32767" attributes="0"/>
+                          <Component id="invoicePanel1" pref="215" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="P3P2Panel3" pref="215" max="32767" attributes="0"/>
+                          <Component id="invoicePanel2" pref="215" max="32767" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="P3P2Panel4" pref="215" max="32767" attributes="0"/>
+                          <Component id="invoicePanel3" pref="215" max="32767" attributes="0"/>
                           <EmptySpace min="-2" pref="16" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -1358,10 +1361,10 @@
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="32767" attributes="0"/>
                           <Group type="103" groupAlignment="1" max="-2" attributes="0">
-                              <Component id="P3P2Panel3" alignment="0" pref="204" max="32767" attributes="0"/>
-                              <Component id="P3P2Panel2" alignment="0" pref="204" max="32767" attributes="0"/>
-                              <Component id="P3P2Panel1" alignment="0" pref="204" max="32767" attributes="0"/>
-                              <Component id="P3P2Panel4" pref="204" max="32767" attributes="0"/>
+                              <Component id="invoicePanel2" alignment="0" pref="204" max="32767" attributes="0"/>
+                              <Component id="invoicePanel1" alignment="0" pref="204" max="32767" attributes="0"/>
+                              <Component id="invoicePanel0" alignment="0" pref="204" max="32767" attributes="0"/>
+                              <Component id="invoicePanel3" pref="204" max="32767" attributes="0"/>
                           </Group>
                           <EmptySpace min="-2" pref="312" max="-2" attributes="0"/>
                       </Group>
@@ -1369,7 +1372,7 @@
                 </DimensionLayout>
               </Layout>
               <SubComponents>
-                <Container class="javax.swing.JPanel" name="P3P2Panel1">
+                <Container class="javax.swing.JPanel" name="invoicePanel0">
                   <Properties>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
@@ -1389,7 +1392,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
-                              <Component id="jButton10" min="-2" pref="129" max="-2" attributes="0"/>
+                              <Component id="btnCompleteInvoice0" min="-2" pref="129" max="-2" attributes="0"/>
                               <EmptySpace pref="52" max="32767" attributes="0"/>
                           </Group>
                           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
@@ -1405,7 +1408,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="jButton10" min="-2" pref="31" max="-2" attributes="0"/>
+                              <Component id="btnCompleteInvoice0" min="-2" pref="31" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
@@ -1419,12 +1422,12 @@
                     </DimensionLayout>
                   </Layout>
                   <SubComponents>
-                    <Component class="javax.swing.JButton" name="jButton10">
+                    <Component class="javax.swing.JButton" name="btnCompleteInvoice0">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Complate"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton10ActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCompleteInvoice0ActionPerformed"/>
                       </Events>
                     </Component>
                     <Container class="javax.swing.JScrollPane" name="jScrollPane1">
@@ -1434,7 +1437,7 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JTextPane" name="jTextPane1">
+                        <Component class="javax.swing.JTextPane" name="textPaneInvoiceDetails0">
                           <Properties>
                             <Property name="editable" type="boolean" value="false"/>
                             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -1449,7 +1452,7 @@
                     </Container>
                   </SubComponents>
                 </Container>
-                <Container class="javax.swing.JPanel" name="P3P2Panel2">
+                <Container class="javax.swing.JPanel" name="invoicePanel1">
                   <Properties>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
@@ -1469,7 +1472,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="42" max="-2" attributes="0"/>
-                              <Component id="jButton14" min="-2" pref="129" max="-2" attributes="0"/>
+                              <Component id="btnCompleteInvoice1" min="-2" pref="129" max="-2" attributes="0"/>
                               <EmptySpace pref="42" max="32767" attributes="0"/>
                           </Group>
                           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
@@ -1485,7 +1488,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="jButton14" min="-2" pref="31" max="-2" attributes="0"/>
+                              <Component id="btnCompleteInvoice1" min="-2" pref="31" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
@@ -1499,12 +1502,12 @@
                     </DimensionLayout>
                   </Layout>
                   <SubComponents>
-                    <Component class="javax.swing.JButton" name="jButton14">
+                    <Component class="javax.swing.JButton" name="btnCompleteInvoice1">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Complate"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton14ActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCompleteInvoice1ActionPerformed"/>
                       </Events>
                     </Component>
                     <Container class="javax.swing.JScrollPane" name="jScrollPane2">
@@ -1514,7 +1517,7 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JTextPane" name="jTextPane2">
+                        <Component class="javax.swing.JTextPane" name="textPaneInvoiceDetails1">
                           <Properties>
                             <Property name="editable" type="boolean" value="false"/>
                             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -1526,7 +1529,7 @@
                     </Container>
                   </SubComponents>
                 </Container>
-                <Container class="javax.swing.JPanel" name="P3P2Panel3">
+                <Container class="javax.swing.JPanel" name="invoicePanel2">
                   <Properties>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
@@ -1546,7 +1549,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
-                              <Component id="jButton15" min="-2" pref="129" max="-2" attributes="0"/>
+                              <Component id="btnCompleteInvoice2" min="-2" pref="129" max="-2" attributes="0"/>
                               <EmptySpace pref="44" max="32767" attributes="0"/>
                           </Group>
                           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
@@ -1562,7 +1565,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace pref="165" max="32767" attributes="0"/>
-                              <Component id="jButton15" min="-2" pref="31" max="-2" attributes="0"/>
+                              <Component id="btnCompleteInvoice2" min="-2" pref="31" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
@@ -1576,12 +1579,12 @@
                     </DimensionLayout>
                   </Layout>
                   <SubComponents>
-                    <Component class="javax.swing.JButton" name="jButton15">
+                    <Component class="javax.swing.JButton" name="btnCompleteInvoice2">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Complate"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton15ActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCompleteInvoice2ActionPerformed"/>
                       </Events>
                     </Component>
                     <Container class="javax.swing.JScrollPane" name="jScrollPane3">
@@ -1591,7 +1594,7 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JTextPane" name="jTextPane3">
+                        <Component class="javax.swing.JTextPane" name="textPaneInvoiceDetails2">
                           <Properties>
                             <Property name="editable" type="boolean" value="false"/>
                             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -1603,7 +1606,7 @@
                     </Container>
                   </SubComponents>
                 </Container>
-                <Container class="javax.swing.JPanel" name="P3P2Panel4">
+                <Container class="javax.swing.JPanel" name="invoicePanel3">
                   <Properties>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
@@ -1623,7 +1626,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="40" max="-2" attributes="0"/>
-                              <Component id="jButton16" min="-2" pref="129" max="-2" attributes="0"/>
+                              <Component id="btnCompleteInvoice3" min="-2" pref="129" max="-2" attributes="0"/>
                               <EmptySpace pref="44" max="32767" attributes="0"/>
                           </Group>
                           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
@@ -1639,7 +1642,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace max="32767" attributes="0"/>
-                              <Component id="jButton16" min="-2" pref="31" max="-2" attributes="0"/>
+                              <Component id="btnCompleteInvoice3" min="-2" pref="31" max="-2" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                           <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
@@ -1653,12 +1656,12 @@
                     </DimensionLayout>
                   </Layout>
                   <SubComponents>
-                    <Component class="javax.swing.JButton" name="jButton16">
+                    <Component class="javax.swing.JButton" name="btnCompleteInvoice3">
                       <Properties>
                         <Property name="text" type="java.lang.String" value="Complate"/>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jButton16ActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="btnCompleteInvoice3ActionPerformed"/>
                       </Events>
                     </Component>
                     <Container class="javax.swing.JScrollPane" name="jScrollPane4">
@@ -1668,7 +1671,7 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JTextPane" name="jTextPane4">
+                        <Component class="javax.swing.JTextPane" name="textPaneInvoiceDetails3">
                           <Properties>
                             <Property name="editable" type="boolean" value="false"/>
                             <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
@@ -1724,14 +1727,12 @@
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                   <SubComponents>
-                    <Component class="javax.swing.JTable" name="P3P3Table">
+                    <Component class="javax.swing.JTable" name="tableRemainingInvoice">
                       <Properties>
                         <Property name="model" type="javax.swing.table.TableModel" editor="org.netbeans.modules.form.editors2.TableModelEditor">
-                          <Table columnCount="4" rowCount="4">
-                            <Column editable="true" title="Title 1" type="java.lang.Object"/>
-                            <Column editable="true" title="Title 2" type="java.lang.Object"/>
-                            <Column editable="true" title="Title 3" type="java.lang.Object"/>
-                            <Column editable="true" title="Title 4" type="java.lang.Object"/>
+                          <Table columnCount="2" rowCount="0">
+                            <Column editable="true" title="Invoice_ID" type="java.lang.Object"/>
+                            <Column editable="true" title="Order_Type" type="java.lang.Object"/>
                           </Table>
                         </Property>
                         <Property name="gridColor" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">

@@ -12,7 +12,7 @@ public class InvoiceDAO {
 
   
     public void addInvoice(Invoice invoice) throws SQLException {
-        String sql = "INSERT INTO invoice (invoice_id, cashier_id, preparer_id, invoice_date, invoice_time, completion_state, total_price, order_type, payment_Type) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO invoice (Invoice_ID,Inv_Time,Inv_Date, Total_Price, Completion, Order_Type ,Payment_Type ,C_ID , FP_ID ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setInt(1, invoice.getInvoiceId());
         statement.setInt(2, invoice.getCashierId());
@@ -29,21 +29,21 @@ public class InvoiceDAO {
 
     public List<Invoice> getPendingInvoices(int limit) throws SQLException {
         List<Invoice> pendingInvoices = new ArrayList<>();
-        String sql = "SELECT * FROM invoice WHERE completion_state = false LIMIT ?";
+        String sql = "SELECT * FROM INVOICE WHERE completion_state = false LIMIT ?";
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setInt(1, limit);
         ResultSet resultSet = statement.executeQuery();
 
         while (resultSet.next()) {
-            int invoiceId = resultSet.getInt("invoice_id");
-            int cashierId = resultSet.getInt("cashier_id");
-            int preparerId = resultSet.getInt("preparer_id");
-            String invoiceDate = resultSet.getString("invoice_date");
-            String invoiceTime = resultSet.getString("invoice_time");
-            boolean completionState = resultSet.getBoolean("completion_state");
-            double totalPrice = resultSet.getDouble("total_price");
-            String orderType = resultSet.getString("order_type");
-            String paymentType = resultSet.getString("payment_type");
+            int invoiceId = resultSet.getInt("Invoice_ID");
+            int cashierId = resultSet.getInt("C_ID");
+            int preparerId = resultSet.getInt("FP_ID");
+            String invoiceDate = resultSet.getString("Inv_Date");
+            String invoiceTime = resultSet.getString("Inv_Time");
+            boolean completionState = resultSet.getBoolean("Completion");
+            double totalPrice = resultSet.getDouble("Total_Price");
+            String orderType = resultSet.getString("Order_Type");
+            String paymentType = resultSet.getString("Payment_Type");
 
             Invoice invoice = new Invoice(invoiceId, cashierId, preparerId, invoiceDate, invoiceTime, completionState, totalPrice, orderType, paymentType);
             pendingInvoices.add(invoice);
@@ -54,20 +54,20 @@ public class InvoiceDAO {
 
    
     public boolean getCompletionState(int invoiceId) throws SQLException {
-        String sql = "SELECT completion_state FROM invoice WHERE invoice_id = ?";
+        String sql = "SELECT Completion FROM INVOICE WHERE Invoice_ID = ?";
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setInt(1, invoiceId);
         ResultSet resultSet = statement.executeQuery();
 
         if (resultSet.next()) {
-            return resultSet.getBoolean("completion_state");
+            return resultSet.getBoolean("Completion");
         }
         return false; 
     }
 
     
     public void markInvoiceAsCompleted(int invoiceId) throws SQLException {
-        String sql = "UPDATE invoice SET completion_state = true WHERE invoice_id = ?";
+        String sql = "UPDATE INVOICE SET Completion = true WHERE Invoice_ID = ?";
         PreparedStatement statement = connection.prepareStatement(sql);
         statement.setInt(1, invoiceId);
         statement.executeUpdate();

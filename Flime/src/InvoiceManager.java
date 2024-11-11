@@ -2,38 +2,35 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InvoiceManager {
+public class InvoiceManager {//i write it for Food Preparer
 
     // all completionState = false
     public List<Invoice> getPendingInvoices() throws SQLException {
         List<Invoice> invoices = new ArrayList<>();
-        String query = "SELECT * FROM invoice WHERE completionState = false";
+        String query = "SELECT * FROM INVOICE WHERE Completion = false";
         
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
+            // ResultSet rs = stmt.executeQuery(query)
 
-            while (rs.next()) {
-                Invoice invoice = new Invoice(
-                    rs.getInt("invoice_id"),
-                    rs.getInt("cashier_id"),
-                    rs.getInt("preparer_id"),
-                    rs.getString("invoice_date"),
-                    rs.getString("invoice_time"),
-                    rs.getBoolean("completionState"),
-                    rs.getDouble("total_price"),
-                    rs.getString("order_type"),
-                    rs.getString("payment_type")
-                );
-                invoices.add(invoice);
-            }
-        }
+           // while (rs.next()) {
+               
+                //    String Invoice_ID=String.valueOf( rs.getInt("Invoice_ID"));
+                    
+                  // boolean Completion= rs.getBoolean("Completion");
+                   
+                  // String Order_Type= rs.getString("Order_Type");
+                
+                        
+                   // String tbData[] = {Invoice_ID, Completion, Order_Type};
+              
+             
+         //   }
+       // }
         return invoices;
     }
 
     // update completionState to true 
     public void completeInvoice(int invoiceId) throws SQLException {
-        String query = "UPDATE invoice SET completionState = true WHERE invoice_id = ?";
+        String query = "UPDATE INVOICE SET Completion = true WHERE Invoice_ID = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(query)) {
