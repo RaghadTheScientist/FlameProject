@@ -255,12 +255,13 @@ public static String EmployeeType;
         jButton4 = new javax.swing.JButton();
         BaseLayout = new javax.swing.JPanel();
         Page1Panel = new javax.swing.JPanel();
-        P1Button = new javax.swing.JButton();
+        signbtt = new javax.swing.JButton();
         P1Label1 = new javax.swing.JLabel();
         P1Label2 = new javax.swing.JLabel();
         P1Label3 = new javax.swing.JLabel();
         P1ComboBox = new javax.swing.JComboBox<>();
-        P1TextField = new javax.swing.JTextField();
+        IDtextf = new javax.swing.JTextField();
+        resetbtt = new javax.swing.JButton();
         Page2Panel = new javax.swing.JPanel();
         P2Panel1 = new javax.swing.JPanel();
         P2P1Button1 = new javax.swing.JButton();
@@ -633,11 +634,11 @@ public static String EmployeeType;
 
         BaseLayout.setLayout(new java.awt.CardLayout());
 
-        P1Button.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        P1Button.setText("Sign in ");
-        P1Button.addActionListener(new java.awt.event.ActionListener() {
+        signbtt.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        signbtt.setText("Sign in ");
+        signbtt.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                P1ButtonActionPerformed(evt);
+                signbttActionPerformed(evt);
             }
         });
 
@@ -654,32 +655,53 @@ public static String EmployeeType;
 
         P1ComboBox.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
         P1ComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "...", "Cashier", "Food Preparer" }));
+        P1ComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                P1ComboBoxActionPerformed(evt);
+            }
+        });
 
-        P1TextField.setText("jTextField1");
+        IDtextf.setText("please enter your id");
+        IDtextf.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
+        IDtextf.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                IDtextfActionPerformed(evt);
+            }
+        });
+
+        resetbtt.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        resetbtt.setText("Reset");
+        resetbtt.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetbttActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout Page1PanelLayout = new javax.swing.GroupLayout(Page1Panel);
         Page1Panel.setLayout(Page1PanelLayout);
         Page1PanelLayout.setHorizontalGroup(
             Page1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, Page1PanelLayout.createSequentialGroup()
+                .addGap(0, 224, Short.MAX_VALUE)
+                .addComponent(P1Label1, javax.swing.GroupLayout.PREFERRED_SIZE, 470, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(216, 216, 216))
             .addGroup(Page1PanelLayout.createSequentialGroup()
-                .addGroup(Page1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGap(251, 251, 251)
+                .addGroup(Page1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(Page1PanelLayout.createSequentialGroup()
-                        .addGap(251, 251, 251)
+                        .addGap(22, 22, 22)
+                        .addComponent(signbtt, javax.swing.GroupLayout.PREFERRED_SIZE, 160, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(resetbtt, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(Page1PanelLayout.createSequentialGroup()
                         .addGroup(Page1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(P1Label2, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(P1Label3, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(Page1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(P1ComboBox, 0, 200, Short.MAX_VALUE)
-                            .addComponent(P1TextField)))
-                    .addGroup(Page1PanelLayout.createSequentialGroup()
-                        .addGap(361, 361, 361)
-                        .addComponent(P1Button, javax.swing.GroupLayout.PREFERRED_SIZE, 182, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(247, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, Page1PanelLayout.createSequentialGroup()
-                .addGap(0, 224, Short.MAX_VALUE)
-                .addComponent(P1Label1, javax.swing.GroupLayout.PREFERRED_SIZE, 470, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(216, 216, 216))
+                            .addComponent(IDtextf))))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         Page1PanelLayout.setVerticalGroup(
             Page1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -693,9 +715,11 @@ public static String EmployeeType;
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(Page1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(P1Label3, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(P1TextField, javax.swing.GroupLayout.DEFAULT_SIZE, 43, Short.MAX_VALUE))
+                    .addComponent(IDtextf, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(39, 39, 39)
-                .addComponent(P1Button, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGroup(Page1PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(signbtt, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(resetbtt, javax.swing.GroupLayout.PREFERRED_SIZE, 45, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(84, 84, 84))
         );
 
@@ -1336,18 +1360,57 @@ public static String EmployeeType;
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void P1ButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P1ButtonActionPerformed
-        if(P1ComboBox.getSelectedItem().toString().equals("Cashier")){
+    private void signbttActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signbttActionPerformed
+     
+        try{
+            Class.forName("com.mysql,jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc://localhost:3306/flame?useSSL","root","1234");
+            //mydb is database name مااعر int id = (int)IDtextf.getText();ف 
+           int id;
+           try {
+               id = Integer.parseInt(IDtextf.getText());
+           } catch (NumberFormatException e) {
+               JOptionPane.showMessageDialog(null, "Please enter a valid numerical ID.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+               return;
+           }
+        
+          
+         
+          if(P1ComboBox.getSelectedItem().toString().equals("Cashier")){
+               String sql = "SELECT * FROM cashier WHERE Cashier_ID = " + id;
+          Statement stmt = con.createStatement();
+          ResultSet rs = stmt.executeQuery(sql);
+          if(rs.next()){
         BaseLayout.removeAll();
         BaseLayout.add(Page2Panel);
         BaseLayout.validate();
-        }
+        }else{
+          JOptionPane.showMessageDialog(this,"ID is incorrect");
+          IDtextf.setText("");
+          //reset comobox
+          }}
          if(P1ComboBox.getSelectedItem().toString().equals("Food Preparer")){
+              String sq = "SELECT * FROM food_preparer WHERE preparer_ID = " + id;
+          Statement stm = con.createStatement();
+          ResultSet r = stm .executeQuery(sq);
+          if(r.next()){
         BaseLayout.removeAll();
         BaseLayout.add(Page3Panel);
         BaseLayout.validate();
-        }
-    }//GEN-LAST:event_P1ButtonActionPerformed
+        }else{
+          JOptionPane.showMessageDialog(this,"ID is incorrect");
+          IDtextf.setText("");
+          //reset comobox
+          }}
+         
+          con.close();
+        }catch(Exception e)//close try
+        {System.out.println(e.getMessage());
+        
+        }//close
+        
+        
+    }//GEN-LAST:event_signbttActionPerformed
 
     private void P2P1Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P1Button1ActionPerformed
         // TODO add your handling code here:
@@ -1456,6 +1519,21 @@ public static String EmployeeType;
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton4ActionPerformed
 
+    private void resetbttActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetbttActionPerformed
+        // TODO add your handling code here:
+        IDtextf.setText("");
+        //IDtextf.setSelectedIndex(0);ERROR
+    }//GEN-LAST:event_resetbttActionPerformed
+
+    private void P1ComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P1ComboBoxActionPerformed
+     // TODO add your handling code here:
+    }//GEN-LAST:event_P1ComboBoxActionPerformed
+
+    private void IDtextfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_IDtextfActionPerformed
+        // TODO add your handling code here:
+        
+    }//GEN-LAST:event_IDtextfActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -1477,14 +1555,13 @@ public static String EmployeeType;
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JPanel BaseLayout;
+    private javax.swing.JTextField IDtextf;
     private javax.swing.JDialog MyInfoDialog;
     private javax.swing.JDialog NewItemDialog;
-    private javax.swing.JButton P1Button;
     private javax.swing.JComboBox<String> P1ComboBox;
     private javax.swing.JLabel P1Label1;
     private javax.swing.JLabel P1Label2;
     private javax.swing.JLabel P1Label3;
-    private javax.swing.JTextField P1TextField;
     private javax.swing.JButton P2P1Button1;
     private javax.swing.JButton P2P1Button2;
     private javax.swing.JButton P2P1Button3;
@@ -1562,6 +1639,8 @@ public static String EmployeeType;
     private javax.swing.JTextField jTextField5;
     private javax.swing.JTextField jTextField6;
     private javax.swing.JTextField jTextField7;
+    private javax.swing.JButton resetbtt;
+    private javax.swing.JButton signbtt;
     private javax.swing.JTable tableRemainingInvoice;
     private javax.swing.JTextPane textPaneInvoiceDetails0;
     private javax.swing.JTextPane textPaneInvoiceDetails1;
