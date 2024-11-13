@@ -10,9 +10,9 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 public class FlameUI extends javax.swing.JFrame {
-public static final String  DB_URL = "jdbc:mysql://localhost:3306/sys";
+public static final String  DB_URL = "jdbc:mysql://localhost/flame";
 public static final String  USER = "root";
-public static final String  PASS = "2n4@060";
+public static final String  PASS = "1234";
 
 public static int ID ;
 public static String EmployeeType;
@@ -629,7 +629,6 @@ public static String EmployeeType;
         );
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-        setFocusableWindowState(false);
         setResizable(false);
 
         BaseLayout.setLayout(new java.awt.CardLayout());
@@ -1363,8 +1362,8 @@ public static String EmployeeType;
     private void signbttActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_signbttActionPerformed
      
         try{
-            Class.forName("com.mysql,jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc://localhost:3306/flame?useSSL","root","1234");
+            
+            Connection con = DriverManager.getConnection(DB_URL,USER,PASS);
             //mydb is database name مااعر int id = (int)IDtextf.getText();ف 
            int id;
            try {
@@ -1377,30 +1376,36 @@ public static String EmployeeType;
           
          
           if(P1ComboBox.getSelectedItem().toString().equals("Cashier")){
-               String sql = "SELECT * FROM cashier WHERE Cashier_ID = " + id;
-          Statement stmt = con.createStatement();
-          ResultSet rs = stmt.executeQuery(sql);
-          if(rs.next()){
-        BaseLayout.removeAll();
-        BaseLayout.add(Page2Panel);
-        BaseLayout.validate();
-        }else{
-          JOptionPane.showMessageDialog(this,"ID is incorrect");
-          IDtextf.setText("");
-          //reset comobox
-          }}
-         if(P1ComboBox.getSelectedItem().toString().equals("Food Preparer")){
-              String sq = "SELECT * FROM food_preparer WHERE preparer_ID = " + id;
-          Statement stm = con.createStatement();
-          ResultSet r = stm .executeQuery(sq);
-          if(r.next()){
-        BaseLayout.removeAll();
-        BaseLayout.add(Page3Panel);
-        BaseLayout.validate();
-        }else{
-          JOptionPane.showMessageDialog(this,"ID is incorrect");
-          IDtextf.setText("");
-          //reset comobox
+                String sql = "SELECT * FROM cashier WHERE Cashier_ID = " + id;
+                Statement stmt = con.createStatement();
+                ResultSet rs = stmt.executeQuery(sql);
+                if(rs.next()){
+                    ID = id;
+                    EmployeeType = "Cashier";
+                    BaseLayout.removeAll();
+                    BaseLayout.add(Page2Panel);
+                    BaseLayout.repaint();
+                    BaseLayout.validate();
+                }else{
+                    JOptionPane.showMessageDialog(this,"ID is incorrect");
+                    IDtextf.setText("");
+                    //reset comobox
+                }}
+          else if(P1ComboBox.getSelectedItem().toString().equals("Food Preparer")){
+                String sq = "SELECT * FROM food_preparer WHERE preparer_ID = " + id;
+                Statement stm = con.createStatement();
+                ResultSet r = stm .executeQuery(sq);
+                if(r.next()){
+                    ID = id;
+                    EmployeeType = "Food Preparer";
+                    BaseLayout.removeAll();
+                    BaseLayout.add(Page3Panel);
+                    BaseLayout.repaint();
+                    BaseLayout.validate();
+                }else{
+                    JOptionPane.showMessageDialog(this,"ID is incorrect");
+                    IDtextf.setText("");
+                    //reset comobox
           }}
          
           con.close();
@@ -1490,12 +1495,14 @@ public static String EmployeeType;
     }//GEN-LAST:event_P2P3Button3ActionPerformed
 
     private void P2P1Button3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P1Button3ActionPerformed
-        // TODO add your handling code here:
+        BaseLayout.removeAll();
+        BaseLayout.add(Page1Panel);
+        BaseLayout.validate();
     }//GEN-LAST:event_P2P1Button3ActionPerformed
 
     private void P2P1Button4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P1Button4ActionPerformed
         BaseLayout.removeAll();
-        BaseLayout.add(Page2Panel);
+        BaseLayout.add(Page1Panel);
         BaseLayout.validate();
     }//GEN-LAST:event_P2P1Button4ActionPerformed
 
