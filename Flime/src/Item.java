@@ -7,11 +7,11 @@
 public class Item {
     private int itemId;
     private String name;
-    private double price;
+    private int price;
     private String category;
 
     // Constructors, getters, and setters
-     public Item(int itemId, String name, double price, String category) {
+     public Item(int itemId, String name, int price, String category) {
         this.itemId = itemId;
         this.name = name;
         this.price = price;
@@ -39,7 +39,7 @@ public class Item {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 

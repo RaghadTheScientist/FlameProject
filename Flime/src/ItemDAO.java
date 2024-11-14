@@ -32,12 +32,12 @@ public class ItemDAO {
                     Item item = new Item(
                   rs.getInt("Item_ID"), 
                   rs.getString("Item_Name"), 
-                  rs.getDouble("Item_Price"), 
+                  rs.getInt("Item_Price"), 
                   rs.getString("Category")
               );
                 item.setItemId(rs.getInt("Item_ID"));
                 item.setName(rs.getString("Item_Name"));
-                item.setPrice(rs.getDouble("Item_Price"));
+                item.setPrice( rs.getInt("Item_Price"));
                 item.setCategory(rs.getString("Category"));
                 items.add(item);
             }

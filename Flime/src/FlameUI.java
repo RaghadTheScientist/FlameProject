@@ -10,6 +10,9 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import java.time.*;
 import javax.swing.table.DefaultTableModel;
 public class FlameUI extends javax.swing.JFrame {
 public static final String  DB_URL = "jdbc:mysql://localhost/flame";
@@ -19,6 +22,7 @@ public static final String  PASS = "1234";
 public static int ID ;
 public static String EmployeeType;
 public Queue<String> InvoiceItemList;
+public String InvT1,InvT2;
 
 //NADA========================================================================================
  //private JButton btnMyInformation, btnViewInvoices, btnCreateNewItem;
@@ -31,7 +35,8 @@ public Queue<String> InvoiceItemList;
  //NADA========================================================================================
     public FlameUI() {
         initComponents();
-        GenerateItems();
+
+
    
    //NADA========================================================================================    
    //this for Food Preparer Page NADA
@@ -250,7 +255,7 @@ public Queue<String> InvoiceItemList;
         ItemButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                AddItemToMenu(((int)ItemButton.getClientProperty("ID")),((String)ItemButton.getClientProperty("Name")));
+                AddItemToMenu(((int)ItemButton.getClientProperty("ID")),((String)ItemButton.getClientProperty("Name")),IPrice);
             }});
         jPanelItem.add(ItemName, java.awt.BorderLayout.PAGE_START);
         jPanelItem.add(ItemPrice, java.awt.BorderLayout.CENTER);
@@ -269,25 +274,38 @@ public Queue<String> InvoiceItemList;
             P2P4Panel3.revalidate();
         } 
     }
-    public void AddItemToMenu(int Id, String Name) {
-    DefaultTableModel model = (DefaultTableModel) InvItemsListT.getModel();
+    public void updatePrice(){
+        DefaultTableModel model1 = (DefaultTableModel) InvItemsListT.getModel();
+        int price = 0;
+        for (int i = 0; i < model1.getRowCount(); i++) {
+            price += ((int) model1.getValueAt(i, 3));
+        }
+        TP2.setText(Integer.toString((price)));
+        TPT2.setText(Double.toString(((double)price)*1.15));
+    }
+    public void AddItemToMenu(int Id, String Name,int price) {
+    DefaultTableModel model1 = (DefaultTableModel) InvItemsListT.getModel();
     boolean itemFound = false; // Flag to check if the item is found
 
-    if (model.getRowCount() <= 0) {
-        model.addRow(new Object[]{Id, 1, Name});
+    if (model1.getRowCount() <= 0) {
+        model1.addRow(new Object[]{Id, 1, Name,price});
+        TP2.setText(Integer.toString(price));
+        TPT2.setText(Double.toString(((double)price)*1.15));
     } else {
-        for (int i = 0; i < model.getRowCount(); i++) {
-            if ( model.getValueAt(i, 0).equals(Id)) { // Check if Id matches
-                int currentQuantity = (int) model.getValueAt(i, 1);
-                model.setValueAt(currentQuantity + 1, i, 1); // Update quantity
+        for (int i = 0; i < model1.getRowCount(); i++) {
+            if ( model1.getValueAt(i, 0).equals(Id)) { // Check if Id matches
+                int currentQuantity = (int) model1.getValueAt(i, 1);
+                int currentPrice = (int) model1.getValueAt(i, 3);
+                model1.setValueAt((currentQuantity + 1), i, 1);// Update quantity
+                model1.setValueAt(price+currentPrice, i, 3);
                 itemFound = true;
-                break; // Exit loop once the item is found and updated
+                updatePrice();
+                break; 
             }
         }
-
-        // Add a new row only if the item was not found in the loop
         if (!itemFound) {
-            model.addRow(new Object[]{Id, 1, Name});
+            model1.addRow(new Object[]{Id, 1, Name,price});
+            updatePrice();
         }
     }
 }
@@ -564,8 +582,13 @@ public Queue<String> InvoiceItemList;
                     .addContainerGap(13, Short.MAX_VALUE)))
         );
 
+        PaymentTypeDiaglog.setMinimumSize(new java.awt.Dimension(448, 192));
+        PaymentTypeDiaglog.setModal(true);
+        PaymentTypeDiaglog.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         jLabel12.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel12.setText("Choose the Invoice Type:");
+        PaymentTypeDiaglog.getContentPane().add(jLabel12, new org.netbeans.lib.awtextra.AbsoluteConstraints(14, 82, 237, 33));
 
         jComboBox2.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Cash", "Card" }));
         jComboBox2.addActionListener(new java.awt.event.ActionListener() {
@@ -573,6 +596,7 @@ public Queue<String> InvoiceItemList;
                 jComboBox2ActionPerformed(evt);
             }
         });
+        PaymentTypeDiaglog.getContentPane().add(jComboBox2, new org.netbeans.lib.awtextra.AbsoluteConstraints(285, 28, 130, 36));
 
         jComboBox3.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Dine-In", "Takeout" }));
         jComboBox3.addActionListener(new java.awt.event.ActionListener() {
@@ -580,9 +604,11 @@ public Queue<String> InvoiceItemList;
                 jComboBox3ActionPerformed(evt);
             }
         });
+        PaymentTypeDiaglog.getContentPane().add(jComboBox3, new org.netbeans.lib.awtextra.AbsoluteConstraints(285, 82, 130, 36));
 
         jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel13.setText("Choose the Payment Type:");
+        PaymentTypeDiaglog.getContentPane().add(jLabel13, new org.netbeans.lib.awtextra.AbsoluteConstraints(16, 31, 237, 33));
 
         jButton4.setText("Place Invoice");
         jButton4.addActionListener(new java.awt.event.ActionListener() {
@@ -590,50 +616,7 @@ public Queue<String> InvoiceItemList;
                 jButton4ActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout PaymentTypeDiaglogLayout = new javax.swing.GroupLayout(PaymentTypeDiaglog.getContentPane());
-        PaymentTypeDiaglog.getContentPane().setLayout(PaymentTypeDiaglogLayout);
-        PaymentTypeDiaglogLayout.setHorizontalGroup(
-            PaymentTypeDiaglogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, PaymentTypeDiaglogLayout.createSequentialGroup()
-                .addGroup(PaymentTypeDiaglogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(PaymentTypeDiaglogLayout.createSequentialGroup()
-                        .addContainerGap(285, Short.MAX_VALUE)
-                        .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, PaymentTypeDiaglogLayout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(33, 33, 33))
-            .addGroup(PaymentTypeDiaglogLayout.createSequentialGroup()
-                .addGap(159, 159, 159)
-                .addComponent(jButton4, javax.swing.GroupLayout.PREFERRED_SIZE, 128, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(PaymentTypeDiaglogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(PaymentTypeDiaglogLayout.createSequentialGroup()
-                    .addGap(16, 16, 16)
-                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 237, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(195, Short.MAX_VALUE)))
-        );
-        PaymentTypeDiaglogLayout.setVerticalGroup(
-            PaymentTypeDiaglogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(PaymentTypeDiaglogLayout.createSequentialGroup()
-                .addGap(28, 28, 28)
-                .addComponent(jComboBox2, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
-                .addGroup(PaymentTypeDiaglogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jComboBox3, javax.swing.GroupLayout.PREFERRED_SIZE, 36, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
-                .addComponent(jButton4)
-                .addGap(23, 23, 23))
-            .addGroup(PaymentTypeDiaglogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(PaymentTypeDiaglogLayout.createSequentialGroup()
-                    .addGap(31, 31, 31)
-                    .addComponent(jLabel13, javax.swing.GroupLayout.PREFERRED_SIZE, 33, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(128, Short.MAX_VALUE)))
-        );
+        PaymentTypeDiaglog.getContentPane().add(jButton4, new org.netbeans.lib.awtextra.AbsoluteConstraints(159, 146, 128, -1));
 
         jLabel7.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         jLabel7.setText("Create New Item");
@@ -912,14 +895,14 @@ public Queue<String> InvoiceItemList;
 
             },
             new String [] {
-                "ID", "Quantity", "Item"
+                "ID", "Quantity", "Item", "Price"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
-                false, true, false
+                false, false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -930,12 +913,16 @@ public Queue<String> InvoiceItemList;
                 return canEdit [columnIndex];
             }
         });
+        InvItemsListT.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane7.setViewportView(InvItemsListT);
         if (InvItemsListT.getColumnModel().getColumnCount() > 0) {
             InvItemsListT.getColumnModel().getColumn(0).setMinWidth(50);
             InvItemsListT.getColumnModel().getColumn(0).setMaxWidth(50);
-            InvItemsListT.getColumnModel().getColumn(1).setMinWidth(70);
-            InvItemsListT.getColumnModel().getColumn(1).setMaxWidth(70);
+            InvItemsListT.getColumnModel().getColumn(1).setMinWidth(60);
+            InvItemsListT.getColumnModel().getColumn(1).setMaxWidth(60);
+            InvItemsListT.getColumnModel().getColumn(3).setMinWidth(40);
+            InvItemsListT.getColumnModel().getColumn(3).setPreferredWidth(40);
+            InvItemsListT.getColumnModel().getColumn(3).setMaxWidth(40);
         }
 
         javax.swing.GroupLayout InvItemsListLayout = new javax.swing.GroupLayout(InvItemsList);
@@ -1526,10 +1513,12 @@ public Queue<String> InvoiceItemList;
                 if(rs.next()){
                     ID = id;
                     EmployeeType = "Cashier";
+                    GenerateItems();//added by Raghad
                     BaseLayout.removeAll();
                     BaseLayout.add(Page2Panel);
                     BaseLayout.repaint();
                     BaseLayout.validate();
+                    
                 }else{
                     JOptionPane.showMessageDialog(this,"ID is incorrect");
                     IDtextf.setText("");
@@ -1573,11 +1562,20 @@ public Queue<String> InvoiceItemList;
     }//GEN-LAST:event_P2P3Button2ActionPerformed
 
     private void P2P2P2Button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P2P2Button2ActionPerformed
-        // TODO add your handling code here:
+        DefaultTableModel model1 = (DefaultTableModel) InvItemsListT.getModel();
+        if(InvItemsListT.getSelectedRow()!=-1){
+            model1.removeRow(InvItemsListT.getSelectedRow());
+        }else{
+            for (int i = model1.getRowCount() - 1; i >= 0; i--) {
+            model1.removeRow(i);
+            }
+        }
     }//GEN-LAST:event_P2P2P2Button2ActionPerformed
 
     private void P2P2P2Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P2P2Button1ActionPerformed
-        // TODO add your handling code here:
+        PaymentTypeDiaglog.setLocationRelativeTo(this); // Center relative to the main frame
+        PaymentTypeDiaglog.pack();
+        PaymentTypeDiaglog.setVisible(true);
     }//GEN-LAST:event_P2P2P2Button1ActionPerformed
 
     private void btnMyInformationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMyInformationActionPerformed
@@ -1664,18 +1662,6 @@ public Queue<String> InvoiceItemList;
         // TODO add your handling code here:
     }//GEN-LAST:event_jButton3ActionPerformed
 
-    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox2ActionPerformed
-
-    private void jComboBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jComboBox3ActionPerformed
-
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
-
     private void resetbttActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetbttActionPerformed
         // TODO add your handling code here:
         IDtextf.setText("");
@@ -1726,6 +1712,76 @@ public Queue<String> InvoiceItemList;
     private void P2P1Button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P1Button2ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_P2P1Button2ActionPerformed
+
+    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+        int InvID = 0;
+        InvT1 = (String)jComboBox2.getSelectedItem();
+        InvT2 = (String)jComboBox3.getSelectedItem();
+        PaymentTypeDiaglog.dispose();
+        String insertQuery = "INSERT INTO INVOICE (Inv_Time,Inv_Date ,Total_Price ,Completion ,Order_Type ,Payment_Type ,C_ID,FP_ID  ) VALUES (?,?,?,?,?,?,?,?)";
+        //insert invoice
+        try (Connection conn = DriverManager.getConnection(DB_URL,USER,PASS );
+             PreparedStatement pstmt = conn.prepareStatement(insertQuery, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            LocalTime currentTime = LocalTime.now();
+            LocalDate currentDate = LocalDate.now();
+            pstmt.setTime(1, java.sql.Time.valueOf(currentTime));
+            pstmt.setDate(2, java.sql.Date.valueOf(currentDate));
+            pstmt.setInt(3,Integer.parseInt(TP2.getText()));
+            pstmt.setBoolean(4, false);
+            pstmt.setString(5,InvT2);
+            pstmt.setString(6,InvT1);
+            pstmt.setInt(7,ID);
+            pstmt.setNull(8,java.sql.Types.INTEGER);
+            pstmt.executeUpdate();
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+            if (generatedKeys.next()) {
+            InvID = generatedKeys.getInt(1); 
+            
+            }
+            }
+            pstmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        //insert items to invoice
+        DefaultTableModel model1 = (DefaultTableModel) InvItemsListT.getModel();
+        for (int i = 0; i < model1.getRowCount(); i++) {
+            int currentQuantity = (int) model1.getValueAt(i, 1);
+            int currentID = (int) model1.getValueAt(i, 0);
+            insertQuery = "INSERT INTO Consist_Of (Inv_ID, I_ID, Quantity) VALUES (?,?,?)";
+        //insert invoice
+        try (Connection conn = DriverManager.getConnection(DB_URL,USER,PASS );
+            PreparedStatement pstmt = conn.prepareStatement(insertQuery)) {
+            LocalTime currentTime = LocalTime.now();
+            LocalDate currentDate = LocalDate.now();
+            pstmt.setInt(1, InvID);
+            pstmt.setInt(2, currentID);
+            pstmt.setInt(3,currentQuantity);
+            
+            pstmt.execute();
+            pstmt.close();
+            conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        }
+        JOptionPane.showMessageDialog(null, "Invoice has been added successfully!");
+        for (int i = model1.getRowCount() - 1; i >= 0; i--) {
+            model1.removeRow(i);
+        }
+        TP2.setText(" ");
+        TPT2.setText(" ");
+
+    }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jComboBox3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox3ActionPerformed
+
+    private void jComboBox2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox2ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jComboBox2ActionPerformed
 
     /**
      * @param args the command line arguments
