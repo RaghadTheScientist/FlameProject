@@ -21,7 +21,7 @@ public class ItemDAO {
     }
 
     // Method to retrieve all items
-    public List<Item> getAllItems() throws SQLException {
+    public static List<Item> getAllItems() throws SQLException {
         List<Item> items = new ArrayList<>();
         String query = "SELECT * FROM item";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -30,15 +30,15 @@ public class ItemDAO {
 
             while (rs.next()) {
                     Item item = new Item(
-                  rs.getInt("item_id"), 
-                  rs.getString("name"), 
-                  rs.getDouble("price"), 
-                  rs.getString("category")
+                  rs.getInt("Item_ID"), 
+                  rs.getString("Item_Name"), 
+                  rs.getDouble("Item_Price"), 
+                  rs.getString("Category")
               );
-                item.setItemId(rs.getInt("item_id"));
-                item.setName(rs.getString("name"));
-                item.setPrice(rs.getDouble("price"));
-                item.setCategory(rs.getString("category"));
+                item.setItemId(rs.getInt("Item_ID"));
+                item.setName(rs.getString("Item_Name"));
+                item.setPrice(rs.getDouble("Item_Price"));
+                item.setCategory(rs.getString("Category"));
                 items.add(item);
             }
         }

@@ -1,10 +1,12 @@
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -16,6 +18,7 @@ public static final String  PASS = "1234";
 
 public static int ID ;
 public static String EmployeeType;
+public Queue<String> InvoiceItemList;
 
 //NADA========================================================================================
  //private JButton btnMyInformation, btnViewInvoices, btnCreateNewItem;
@@ -28,6 +31,7 @@ public static String EmployeeType;
  //NADA========================================================================================
     public FlameUI() {
         initComponents();
+        GenerateItems();
    
    //NADA========================================================================================    
    //this for Food Preparer Page NADA
@@ -214,6 +218,79 @@ public static String EmployeeType;
         }
     }
     //NADA========================================================================================
+    public void GenerateItems(){
+    List<Item> list = null;
+    try {
+        list = ItemDAO.getAllItems();
+    } catch (SQLException ex) {
+        Logger.getLogger(FlameUI.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    
+    for (Item list1 : list) {
+        AddItemToMenu(list1.getName(),(int)list1.getPrice(),list1.getItemId(),list1.getCategory());
+    }
+        
+    }
+    public void AddItemToMenu(String IName,int IPrice,int IId,String CTGRY){
+        javax.swing.JPanel jPanelItem = new javax.swing.JPanel();
+        jPanelItem.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0), 2));
+        jPanelItem.setLayout(new java.awt.BorderLayout(10, 10));
+        jPanelItem.setSize(new Dimension(100,100));
+        
+        javax.swing.JLabel ItemName = new javax.swing.JLabel();
+        ItemName.setText(IName);
+        
+        javax.swing.JLabel ItemPrice = new javax.swing.JLabel();
+        ItemPrice.setText(Integer.toString(IPrice));
+        
+        javax.swing.JButton ItemButton = new javax.swing.JButton();
+        ItemButton.setText("ADD");
+        ItemButton.putClientProperty("ID", IId);
+        ItemButton.putClientProperty("Name", IName);
+        ItemButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                AddItemToMenu(((int)ItemButton.getClientProperty("ID")),((String)ItemButton.getClientProperty("Name")));
+            }});
+        jPanelItem.add(ItemName, java.awt.BorderLayout.PAGE_START);
+        jPanelItem.add(ItemPrice, java.awt.BorderLayout.CENTER);
+        jPanelItem.add(ItemButton, java.awt.BorderLayout.PAGE_END);
+        if(CTGRY.equalsIgnoreCase("Hot Drinks")){
+            P2P4Panel1.add(jPanelItem);
+            P2P4Panel1.repaint();
+            P2P4Panel1.revalidate();
+        }else if(CTGRY.equalsIgnoreCase("Cold Drinks")){
+            P2P4Panel2.add(jPanelItem);
+            P2P4Panel2.repaint();
+            P2P4Panel2.revalidate();
+        }else{
+            P2P4Panel3.add(jPanelItem);
+            P2P4Panel3.repaint();
+            P2P4Panel3.revalidate();
+        } 
+    }
+    public void AddItemToMenu(int Id, String Name) {
+    DefaultTableModel model = (DefaultTableModel) InvItemsListT.getModel();
+    boolean itemFound = false; // Flag to check if the item is found
+
+    if (model.getRowCount() <= 0) {
+        model.addRow(new Object[]{Id, 1, Name});
+    } else {
+        for (int i = 0; i < model.getRowCount(); i++) {
+            if ( model.getValueAt(i, 0).equals(Id)) { // Check if Id matches
+                int currentQuantity = (int) model.getValueAt(i, 1);
+                model.setValueAt(currentQuantity + 1, i, 1); // Update quantity
+                itemFound = true;
+                break; // Exit loop once the item is found and updated
+            }
+        }
+
+        // Add a new row only if the item was not found in the loop
+        if (!itemFound) {
+            model.addRow(new Object[]{Id, 1, Name});
+        }
+    }
+}
 
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -271,9 +348,16 @@ public static String EmployeeType;
         P2P1Button3 = new javax.swing.JButton();
         P2Panel2 = new javax.swing.JPanel();
         P2P2Panel1 = new javax.swing.JPanel();
+        InvItemsList = new javax.swing.JPanel();
+        jScrollPane7 = new javax.swing.JScrollPane();
+        InvItemsListT = new javax.swing.JTable();
         P2P2Panel2 = new javax.swing.JPanel();
         P2P2P2Button1 = new javax.swing.JButton();
         P2P2P2Button2 = new javax.swing.JButton();
+        TP1 = new javax.swing.JLabel();
+        TPT1 = new javax.swing.JLabel();
+        TP2 = new javax.swing.JLabel();
+        TPT2 = new javax.swing.JLabel();
         P2Panel3 = new javax.swing.JPanel();
         P2P3Label = new javax.swing.JLabel();
         P2P3Button1 = new javax.swing.JButton();
@@ -281,11 +365,8 @@ public static String EmployeeType;
         P2P3Button3 = new javax.swing.JButton();
         P2Panel4 = new javax.swing.JPanel();
         P2P4Panel1 = new javax.swing.JPanel();
-        P2P4P1Label = new javax.swing.JLabel();
         P2P4Panel2 = new javax.swing.JPanel();
-        P2P4P2Label = new javax.swing.JLabel();
         P2P4Panel3 = new javax.swing.JPanel();
-        P2P4P3Label = new javax.swing.JLabel();
         Page3Panel = new javax.swing.JPanel();
         topPanel = new javax.swing.JPanel();
         btnMyInformation = new javax.swing.JButton();
@@ -824,15 +905,67 @@ public static String EmployeeType;
 
         P2P2Panel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
 
+        InvItemsList.setPreferredSize(new java.awt.Dimension(260, 310));
+
+        InvItemsListT.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ID", "Quantity", "Item"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.Integer.class, java.lang.String.class
+            };
+            boolean[] canEdit = new boolean [] {
+                false, true, false
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+
+            public boolean isCellEditable(int rowIndex, int columnIndex) {
+                return canEdit [columnIndex];
+            }
+        });
+        jScrollPane7.setViewportView(InvItemsListT);
+        if (InvItemsListT.getColumnModel().getColumnCount() > 0) {
+            InvItemsListT.getColumnModel().getColumn(0).setMinWidth(50);
+            InvItemsListT.getColumnModel().getColumn(0).setMaxWidth(50);
+            InvItemsListT.getColumnModel().getColumn(1).setMinWidth(70);
+            InvItemsListT.getColumnModel().getColumn(1).setMaxWidth(70);
+        }
+
+        javax.swing.GroupLayout InvItemsListLayout = new javax.swing.GroupLayout(InvItemsList);
+        InvItemsList.setLayout(InvItemsListLayout);
+        InvItemsListLayout.setHorizontalGroup(
+            InvItemsListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(InvItemsListLayout.createSequentialGroup()
+                .addComponent(jScrollPane7, javax.swing.GroupLayout.PREFERRED_SIZE, 258, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 2, Short.MAX_VALUE))
+        );
+        InvItemsListLayout.setVerticalGroup(
+            InvItemsListLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane7, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 310, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout P2P2Panel1Layout = new javax.swing.GroupLayout(P2P2Panel1);
         P2P2Panel1.setLayout(P2P2Panel1Layout);
         P2P2Panel1Layout.setHorizontalGroup(
             P2P2Panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 0, Short.MAX_VALUE)
+            .addGroup(P2P2Panel1Layout.createSequentialGroup()
+                .addGap(0, 1, Short.MAX_VALUE)
+                .addComponent(InvItemsList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 1, Short.MAX_VALUE))
         );
         P2P2Panel1Layout.setVerticalGroup(
             P2P2Panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 327, Short.MAX_VALUE)
+            .addGroup(P2P2Panel1Layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(InvItemsList, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
 
         P2P2Panel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
@@ -849,7 +982,7 @@ public static String EmployeeType;
         });
 
         P2P2P2Button2.setBackground(new java.awt.Color(226, 226, 226));
-        P2P2P2Button2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 14)); // NOI18N
+        P2P2P2Button2.setFont(new java.awt.Font("Segoe UI Semibold", 0, 12)); // NOI18N
         P2P2P2Button2.setText("Trash");
         P2P2P2Button2.setPreferredSize(new java.awt.Dimension(75, 40));
         P2P2P2Button2.addActionListener(new java.awt.event.ActionListener() {
@@ -858,25 +991,52 @@ public static String EmployeeType;
             }
         });
 
+        TP1.setText("Total Price :");
+
+        TPT1.setText("Total Price With Tax. :");
+
+        TP2.setText("  ");
+
+        TPT2.setText("  ");
+
         javax.swing.GroupLayout P2P2Panel2Layout = new javax.swing.GroupLayout(P2P2Panel2);
         P2P2Panel2.setLayout(P2P2Panel2Layout);
         P2P2Panel2Layout.setHorizontalGroup(
             P2P2Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(P2P2Panel2Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(P2P2P2Button1, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(P2P2P2Button2, javax.swing.GroupLayout.PREFERRED_SIZE, 68, Short.MAX_VALUE)
-                .addGap(15, 15, 15))
+                .addGroup(P2P2Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(P2P2Panel2Layout.createSequentialGroup()
+                        .addComponent(P2P2P2Button1, javax.swing.GroupLayout.PREFERRED_SIZE, 161, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(P2P2P2Button2, javax.swing.GroupLayout.PREFERRED_SIZE, 68, Short.MAX_VALUE)
+                        .addGap(15, 15, 15))
+                    .addGroup(P2P2Panel2Layout.createSequentialGroup()
+                        .addComponent(TP1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(TP2)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(P2P2Panel2Layout.createSequentialGroup()
+                        .addComponent(TPT1)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(TPT2)
+                        .addGap(0, 0, Short.MAX_VALUE))))
         );
         P2P2Panel2Layout.setVerticalGroup(
             P2P2Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P2P2Panel2Layout.createSequentialGroup()
-                .addGap(19, 19, 19)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, P2P2Panel2Layout.createSequentialGroup()
                 .addGroup(P2P2Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(P2P2P2Button2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(P2P2P2Button1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(19, Short.MAX_VALUE))
+                    .addComponent(TP1)
+                    .addComponent(TP2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 7, Short.MAX_VALUE)
+                .addGroup(P2P2Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(TPT1, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(TPT2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 20, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(P2P2Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(P2P2P2Button1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(P2P2P2Button2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap())
         );
 
         javax.swing.GroupLayout P2Panel2Layout = new javax.swing.GroupLayout(P2Panel2);
@@ -890,8 +1050,8 @@ public static String EmployeeType;
             P2Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(P2Panel2Layout.createSequentialGroup()
                 .addComponent(P2P2Panel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(P2P2Panel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(P2P2Panel2, javax.swing.GroupLayout.DEFAULT_SIZE, 98, Short.MAX_VALUE))
         );
 
         P2Panel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
@@ -963,68 +1123,8 @@ public static String EmployeeType;
 
         P2Panel4.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
         P2Panel4.setLayout(new java.awt.CardLayout());
-
-        P2P4P1Label.setText("hot drinks");
-
-        javax.swing.GroupLayout P2P4Panel1Layout = new javax.swing.GroupLayout(P2P4Panel1);
-        P2P4Panel1.setLayout(P2P4Panel1Layout);
-        P2P4Panel1Layout.setHorizontalGroup(
-            P2P4Panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P2P4Panel1Layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(P2P4P1Label)
-                .addContainerGap(566, Short.MAX_VALUE))
-        );
-        P2P4Panel1Layout.setVerticalGroup(
-            P2P4Panel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P2P4Panel1Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(P2P4P1Label)
-                .addContainerGap(298, Short.MAX_VALUE))
-        );
-
         P2Panel4.add(P2P4Panel1, "HotDrinks");
-
-        P2P4P2Label.setText("cold drinks");
-
-        javax.swing.GroupLayout P2P4Panel2Layout = new javax.swing.GroupLayout(P2P4Panel2);
-        P2P4Panel2.setLayout(P2P4Panel2Layout);
-        P2P4Panel2Layout.setHorizontalGroup(
-            P2P4Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P2P4Panel2Layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(P2P4P2Label)
-                .addContainerGap(561, Short.MAX_VALUE))
-        );
-        P2P4Panel2Layout.setVerticalGroup(
-            P2P4Panel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P2P4Panel2Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(P2P4P2Label)
-                .addContainerGap(298, Short.MAX_VALUE))
-        );
-
         P2Panel4.add(P2P4Panel2, "ColdDrinks");
-
-        P2P4P3Label.setText("sweet");
-
-        javax.swing.GroupLayout P2P4Panel3Layout = new javax.swing.GroupLayout(P2P4Panel3);
-        P2P4Panel3.setLayout(P2P4Panel3Layout);
-        P2P4Panel3Layout.setHorizontalGroup(
-            P2P4Panel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P2P4Panel3Layout.createSequentialGroup()
-                .addGap(17, 17, 17)
-                .addComponent(P2P4P3Label)
-                .addContainerGap(589, Short.MAX_VALUE))
-        );
-        P2P4Panel3Layout.setVerticalGroup(
-            P2P4Panel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(P2P4Panel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(P2P4P3Label)
-                .addContainerGap(298, Short.MAX_VALUE))
-        );
-
         P2Panel4.add(P2P4Panel3, "Sweet");
 
         javax.swing.GroupLayout Page2PanelLayout = new javax.swing.GroupLayout(Page2Panel);
@@ -1546,6 +1646,7 @@ public static String EmployeeType;
     private void P2P1Button3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P1Button3ActionPerformed
         BaseLayout.removeAll();
         BaseLayout.add(Page1Panel);
+        BaseLayout.repaint();
         BaseLayout.validate();
     }//GEN-LAST:event_P2P1Button3ActionPerformed
 
@@ -1648,6 +1749,8 @@ public static String EmployeeType;
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JPanel BaseLayout;
     private javax.swing.JTextField IDtextf;
+    private javax.swing.JPanel InvItemsList;
+    public javax.swing.JTable InvItemsListT;
     private javax.swing.JDialog MyInfoDialog;
     private javax.swing.JComboBox<String> P1ComboBox;
     private javax.swing.JLabel P1Label1;
@@ -1665,9 +1768,6 @@ public static String EmployeeType;
     private javax.swing.JButton P2P3Button2;
     private javax.swing.JButton P2P3Button3;
     private javax.swing.JLabel P2P3Label;
-    private javax.swing.JLabel P2P4P1Label;
-    private javax.swing.JLabel P2P4P2Label;
-    private javax.swing.JLabel P2P4P3Label;
     private javax.swing.JPanel P2P4Panel1;
     private javax.swing.JPanel P2P4Panel2;
     private javax.swing.JPanel P2P4Panel3;
@@ -1682,6 +1782,10 @@ public static String EmployeeType;
     private javax.swing.JPanel Page2Panel;
     private javax.swing.JPanel Page3Panel;
     private javax.swing.JDialog PaymentTypeDiaglog;
+    private javax.swing.JLabel TP1;
+    private javax.swing.JLabel TP2;
+    private javax.swing.JLabel TPT1;
+    private javax.swing.JLabel TPT2;
     private javax.swing.JDialog ViewInvoicesDialog;
     private javax.swing.JButton btnCompleteInvoice0;
     private javax.swing.JButton btnCompleteInvoice1;
@@ -1727,6 +1831,7 @@ public static String EmployeeType;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
+    private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
