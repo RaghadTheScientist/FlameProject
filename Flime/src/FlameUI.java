@@ -15,9 +15,9 @@ import javax.swing.event.TableModelListener;
 import java.time.*;
 import javax.swing.table.DefaultTableModel;
 public class FlameUI extends javax.swing.JFrame {//test
-public static final String  DB_URL = "jdbc:mysql://localhost/sys";
+public static final String  DB_URL = "jdbc:mysql://localhost/flame";
 public static final String  USER = "root";
-public static final String  PASS = "2n4@060";
+public static final String  PASS = "1234";
 
 public static int ID ;
 public static String EmployeeType;
@@ -632,13 +632,6 @@ DefaultTableModel waitingListModel ;
         jTextField4 = new javax.swing.JTextField();
         jTextField5 = new javax.swing.JTextField();
         jButton2 = new javax.swing.JButton();
-        ViewInvoicesDialog = new javax.swing.JDialog();
-        jScrollPane5 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
-        jLabel6 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jCheckBox1 = new javax.swing.JCheckBox();
-        jButton3 = new javax.swing.JButton();
         PaymentTypeDiaglog = new javax.swing.JDialog();
         jLabel12 = new javax.swing.JLabel();
         jComboBox2 = new javax.swing.JComboBox<>();
@@ -710,23 +703,31 @@ DefaultTableModel waitingListModel ;
         tableRemainingInvoice = new javax.swing.JTable();
         P3P3Label1 = new javax.swing.JLabel();
 
+        MyInfoDialog.getContentPane().setLayout(new org.netbeans.lib.awtextra.AbsoluteLayout());
+
         jLabel1.setText("First Name");
+        MyInfoDialog.getContentPane().add(jLabel1, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 68, 110, 32));
 
         jLabel3.setText("ID");
+        MyInfoDialog.getContentPane().add(jLabel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 24, 110, 32));
 
         jLabel2.setText("Phone Number");
+        MyInfoDialog.getContentPane().add(jLabel2, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 163, 110, 32));
 
         jLabel4.setText("Last Name");
+        MyInfoDialog.getContentPane().add(jLabel4, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 113, 110, 32));
 
         jLabel5.setText("Salary");
+        MyInfoDialog.getContentPane().add(jLabel5, new org.netbeans.lib.awtextra.AbsoluteConstraints(23, 207, 110, 32));
 
+        jTextField1.setEditable(false);
         jTextField1.setText("jTextField1");
-        jTextField1.setEnabled(false);
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 jTextField1ActionPerformed(evt);
             }
         });
+        MyInfoDialog.getContentPane().add(jTextField1, new org.netbeans.lib.awtextra.AbsoluteConstraints(151, 29, 184, -1));
 
         jTextField2.setText("jTextField1");
         jTextField2.addActionListener(new java.awt.event.ActionListener() {
@@ -734,150 +735,25 @@ DefaultTableModel waitingListModel ;
                 jTextField2ActionPerformed(evt);
             }
         });
+        MyInfoDialog.getContentPane().add(jTextField2, new org.netbeans.lib.awtextra.AbsoluteConstraints(151, 73, 184, -1));
 
         jTextField3.setText("jTextField1");
+        MyInfoDialog.getContentPane().add(jTextField3, new org.netbeans.lib.awtextra.AbsoluteConstraints(151, 118, 184, -1));
 
         jTextField4.setText("jTextField1");
+        MyInfoDialog.getContentPane().add(jTextField4, new org.netbeans.lib.awtextra.AbsoluteConstraints(151, 168, 184, -1));
 
+        jTextField5.setEditable(false);
         jTextField5.setText("jTextField1");
+        MyInfoDialog.getContentPane().add(jTextField5, new org.netbeans.lib.awtextra.AbsoluteConstraints(151, 212, 184, -1));
 
         jButton2.setText("Save");
-
-        javax.swing.GroupLayout MyInfoDialogLayout = new javax.swing.GroupLayout(MyInfoDialog.getContentPane());
-        MyInfoDialog.getContentPane().setLayout(MyInfoDialogLayout);
-        MyInfoDialogLayout.setHorizontalGroup(
-            MyInfoDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(MyInfoDialogLayout.createSequentialGroup()
-                .addGroup(MyInfoDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(MyInfoDialogLayout.createSequentialGroup()
-                        .addGap(23, 23, 23)
-                        .addGroup(MyInfoDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(MyInfoDialogLayout.createSequentialGroup()
-                                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(MyInfoDialogLayout.createSequentialGroup()
-                                .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(MyInfoDialogLayout.createSequentialGroup()
-                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(MyInfoDialogLayout.createSequentialGroup()
-                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(MyInfoDialogLayout.createSequentialGroup()
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
-                                .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                    .addGroup(MyInfoDialogLayout.createSequentialGroup()
-                        .addGap(174, 174, 174)
-                        .addComponent(jButton2)))
-                .addContainerGap(113, Short.MAX_VALUE))
-        );
-        MyInfoDialogLayout.setVerticalGroup(
-            MyInfoDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(MyInfoDialogLayout.createSequentialGroup()
-                .addGap(24, 24, 24)
-                .addGroup(MyInfoDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(MyInfoDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(13, 13, 13)
-                .addGroup(MyInfoDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addGroup(MyInfoDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(MyInfoDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jTextField5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 32, Short.MAX_VALUE)
-                .addComponent(jButton2)
-                .addContainerGap())
-        );
-
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
-            },
-            new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
-            }
-        ));
-        jScrollPane5.setViewportView(jTable1);
-
-        jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
-        jLabel6.setText("Invoices");
-
-        jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
-        jLabel10.setText("Filter :");
-
-        jCheckBox1.setText("Only completed Invoices");
-        jCheckBox1.addActionListener(new java.awt.event.ActionListener() {
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jCheckBox1ActionPerformed(evt);
+                jButton2ActionPerformed(evt);
             }
         });
-
-        jButton3.setText("Apply");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout ViewInvoicesDialogLayout = new javax.swing.GroupLayout(ViewInvoicesDialog.getContentPane());
-        ViewInvoicesDialog.getContentPane().setLayout(ViewInvoicesDialogLayout);
-        ViewInvoicesDialogLayout.setHorizontalGroup(
-            ViewInvoicesDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(ViewInvoicesDialogLayout.createSequentialGroup()
-                .addGap(47, 47, 47)
-                .addGroup(ViewInvoicesDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(ViewInvoicesDialogLayout.createSequentialGroup()
-                        .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(ViewInvoicesDialogLayout.createSequentialGroup()
-                        .addComponent(jLabel10)
-                        .addGap(26, 26, 26)
-                        .addComponent(jCheckBox1, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 123, Short.MAX_VALUE)
-                        .addComponent(jButton3)
-                        .addGap(51, 51, 51))))
-            .addGroup(ViewInvoicesDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ViewInvoicesDialogLayout.createSequentialGroup()
-                    .addContainerGap(48, Short.MAX_VALUE)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(48, Short.MAX_VALUE)))
-        );
-        ViewInvoicesDialogLayout.setVerticalGroup(
-            ViewInvoicesDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(ViewInvoicesDialogLayout.createSequentialGroup()
-                .addGap(16, 16, 16)
-                .addComponent(jLabel6)
-                .addGap(18, 18, 18)
-                .addGroup(ViewInvoicesDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel10)
-                    .addComponent(jCheckBox1)
-                    .addComponent(jButton3))
-                .addContainerGap(268, Short.MAX_VALUE))
-            .addGroup(ViewInvoicesDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, ViewInvoicesDialogLayout.createSequentialGroup()
-                    .addContainerGap(106, Short.MAX_VALUE)
-                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(13, Short.MAX_VALUE)))
-        );
+        MyInfoDialog.getContentPane().add(jButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(130, 270, -1, -1));
 
         PaymentTypeDiaglog.setMinimumSize(new java.awt.Dimension(448, 192));
         PaymentTypeDiaglog.setModal(true);
@@ -1741,7 +1617,27 @@ DefaultTableModel waitingListModel ;
     }//GEN-LAST:event_signbttActionPerformed
 
     private void P2P1Button1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P1Button1ActionPerformed
-        // TODO add your handling code here:
+    try {
+        MyInfoDialog.setLocationRelativeTo(this); // Center relative to the main frame
+        MyInfoDialog.pack();
+        MyInfoDialog.setVisible(true);
+        Connection con = DriverManager.getConnection(DB_URL,USER,PASS);
+        String sql = "SELECT * FROM cashier WHERE Cashier_ID = " + ID;
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
+        if(rs.next()){
+            jTextField1.setText(Integer.toString(rs.getInt(1)));
+            jTextField2.setText(rs.getString(2));
+            jTextField3.setText(rs.getString(3));
+            jTextField4.setText(rs.getString(4));
+            jTextField5.setText(rs.getString(5));
+            
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(FlameUI.class.getName()).log(Level.SEVERE, null, ex);
+    }
+        
+        
     }//GEN-LAST:event_P2P1Button1ActionPerformed
 
     private void P2P3Button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P3Button2ActionPerformed
@@ -1769,11 +1665,32 @@ DefaultTableModel waitingListModel ;
     }//GEN-LAST:event_P2P2P2Button1ActionPerformed
 
     private void btnMyInformationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMyInformationActionPerformed
-        // TODO add your handling code here:
+        try {
+        MyInfoDialog.setLocationRelativeTo(this); // Center relative to the main frame
+        MyInfoDialog.pack();
+        MyInfoDialog.setVisible(true);
+        Connection con = DriverManager.getConnection(DB_URL,USER,PASS);
+        String sql = "SELECT * FROM food_preparer WHERE Preparer_ID = " + ID;
+        Statement stmt = con.createStatement();
+        ResultSet rs = stmt.executeQuery(sql);
+        if(rs.next()){
+            jTextField1.setText(Integer.toString(rs.getInt(1)));
+            jTextField2.setText(rs.getString(2));
+            jTextField3.setText(rs.getString(3));
+            jTextField4.setText(rs.getString(4));
+            jTextField5.setText(rs.getString(5));
+            
+        }
+    } catch (SQLException ex) {
+        Logger.getLogger(FlameUI.class.getName()).log(Level.SEVERE, null, ex);
+    }
     }//GEN-LAST:event_btnMyInformationActionPerformed
 
     private void btnViewInvoicesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewInvoicesActionPerformed
-        // TODO add your handling code here:
+        ViewInvoicesDialog d = new ViewInvoicesDialog();
+        d.setLocationRelativeTo(this); // Center relative to the main frame
+        d.pack();
+        d.setVisible(true);
     }//GEN-LAST:event_btnViewInvoicesActionPerformed
 
     private void btnCreateNewItemActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCreateNewItemActionPerformed
@@ -1833,14 +1750,6 @@ DefaultTableModel waitingListModel ;
         BaseLayout.validate();
     }//GEN-LAST:event_P2P1Button4ActionPerformed
 
-    private void jCheckBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jCheckBox1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jCheckBox1ActionPerformed
-
-    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton3ActionPerformed
-
     private void resetbttActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetbttActionPerformed
         // TODO add your handling code here:
         IDtextf.setText("");
@@ -1858,7 +1767,7 @@ DefaultTableModel waitingListModel ;
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
         try{
-         Connection con = DriverManager.getConnection(DB_URL,USER,PASS);
+          Connection con = DriverManager.getConnection(DB_URL,USER,PASS);
          String slc = "INSERT INTO item (Item_Name, Item_Price, Category) VALUES (?, ?, ?)";
          PreparedStatement statement = con.prepareStatement(slc);
           int price ;
@@ -1889,7 +1798,10 @@ DefaultTableModel waitingListModel ;
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void P2P1Button2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_P2P1Button2ActionPerformed
-        // TODO add your handling code here:
+        ViewInvoicesDialog d = new ViewInvoicesDialog();
+        d.setLocationRelativeTo(this); // Center relative to the main frame
+        d.pack();
+        d.setVisible(true);
     }//GEN-LAST:event_P2P1Button2ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -1974,6 +1886,42 @@ DefaultTableModel waitingListModel ;
          completeInvoice();
     }//GEN-LAST:event_completeButtonActionPerformed
 
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+    String phoneNumber = jTextField4.getText();
+    if (phoneNumber.length() != 9) 
+    JOptionPane.showMessageDialog(null, "The Phone Number Must Be 9 digits.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+    else   
+    try{
+        if(EmployeeType.equals("Cashier")){
+    Connection con =DriverManager.getConnection("jdbc:mysql://localhost/flame","root","1234" );
+    String query="UPDATE cashier SET Fname=?,Lname=?,Cphone_Num=? WHERE cashier_id=?";
+    PreparedStatement ps=con.prepareStatement(query);
+    ps.setString(1,jTextField2.getText());
+    ps.setString(2,jTextField3.getText());
+    ps.setString(3,jTextField4.getText());
+    ps.setInt(4,ID );
+    ps.executeUpdate();
+    con.close();
+    }else{
+        Connection con =DriverManager.getConnection("jdbc:mysql://localhost/flame","root","1234" );
+    String query="UPDATE food_preparer SET Fname=?,Lname=?,Fphone_Num=? WHERE Preparer_ID=?";
+    PreparedStatement ps=con.prepareStatement(query);
+    ps.setString(1,jTextField2.getText());
+    ps.setString(2,jTextField3.getText());
+    ps.setString(3,jTextField4.getText());
+    ps.setInt(4,ID );
+    ps.executeUpdate();
+    con.close();
+        }
+    }
+catch(SQLException ex){
+           
+        Logger.getLogger(FlameUI.class.getName()).log(Level.SEVERE, null, ex);
+}
+    MyInfoDialog.dispose();
+      
+    }//GEN-LAST:event_jButton2ActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -2041,7 +1989,6 @@ DefaultTableModel waitingListModel ;
     private javax.swing.JLabel TP2;
     private javax.swing.JLabel TPT1;
     private javax.swing.JLabel TPT2;
-    private javax.swing.JDialog ViewInvoicesDialog;
     private javax.swing.JButton btnCreateNewItem;
     private javax.swing.JButton btnMyInformation;
     private javax.swing.JButton btnViewInvoices;
@@ -2054,17 +2001,14 @@ DefaultTableModel waitingListModel ;
     private javax.swing.JTextField itemP;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
     public javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
-    private javax.swing.JCheckBox jCheckBox1;
     private javax.swing.JComboBox<String> jComboBox1;
     public javax.swing.JComboBox<String> jComboBox2;
     public javax.swing.JComboBox<String> jComboBox3;
     private javax.swing.JFrame jFrame1;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
     private javax.swing.JLabel jLabel13;
@@ -2073,16 +2017,13 @@ DefaultTableModel waitingListModel ;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollBar jScrollBar1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane7;
-    private javax.swing.JTable jTable1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     private javax.swing.JTextField jTextField3;

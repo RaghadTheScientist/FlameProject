@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.awt.*;
 
 public class ViewInvoicesDialog extends JDialog {
 
@@ -17,8 +18,8 @@ public class ViewInvoicesDialog extends JDialog {
     private final DefaultTableModel tableModel;
     private final TableRowSorter<DefaultTableModel> sorter;
 
-    public ViewInvoicesDialog(JFrame parent) {
-        super(parent, "Invoices", true);
+    public ViewInvoicesDialog() {
+        super((Dialog)null, "Invoices", true);
         setSize(600, 400);
         setLayout(new BorderLayout());
 
