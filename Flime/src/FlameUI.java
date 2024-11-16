@@ -530,6 +530,17 @@ DefaultTableModel waitingListModel ;
     
     
     public void GenerateItems(){
+            P2P4Panel1.removeAll();
+            P2P4Panel1.repaint();
+            P2P4Panel1.revalidate();
+       
+            P2P4Panel2.removeAll();
+            P2P4Panel2.repaint();
+            P2P4Panel2.revalidate();
+        
+            P2P4Panel3.removeAll();
+            P2P4Panel3.repaint();
+            P2P4Panel3.revalidate();    
     List<Item> list = null;
     try {
         list = ItemDAO.getAllItems();
