@@ -12,11 +12,10 @@ import java.awt.*;
 public class ViewInvoicesDialog extends JDialog {
 
     private final JTable invoiceTable;
-    private final JTextField filterTextField;
     private final JCheckBox completedOnlyCheckBox;
     private final JButton applyButton;
     private final DefaultTableModel tableModel;
-    private final TableRowSorter<DefaultTableModel> sorter;
+
 
     public ViewInvoicesDialog() {
         super((Dialog)null, "Invoices", true);
@@ -24,19 +23,17 @@ public class ViewInvoicesDialog extends JDialog {
         setLayout(new BorderLayout());
 
         
-        tableModel = new DefaultTableModel(new String[]{"Invoice_ID", "Inv_Date", "Total_Price", "Order_Type"}, 0);
+        tableModel = new DefaultTableModel(new String[]{"Invoice_ID", "Inv_Date", "Total_Price", "Order_Type","Completion"}, 0);
         invoiceTable = new JTable(tableModel);
-        sorter = new TableRowSorter<>(tableModel);
-        invoiceTable.setRowSorter(sorter);
 
         
-        filterTextField = new JTextField(15);
+
         completedOnlyCheckBox = new JCheckBox("Only completed invoices");
         applyButton = new JButton("Apply");
 
         JPanel filterPanel = new JPanel();
         filterPanel.add(new JLabel("Filter:"));
-        filterPanel.add(filterTextField);
+
         filterPanel.add(completedOnlyCheckBox);
         filterPanel.add(applyButton);
 
@@ -50,23 +47,23 @@ public class ViewInvoicesDialog extends JDialog {
 
     private void loadInvoices() {
         try {
-            String url = "jdbc:mysql://localhost:3306/flame";
-            String user = "root";
-            String password = "1234";
+            String url = FlameUI.DB_URL;
+            String user = FlameUI.USER;
+            String password = FlameUI.PASS;
             try (Connection conn = DriverManager.getConnection(url, user, password)) {
                 String query = "SELECT * FROM INVOICE";
                 PreparedStatement stmt = conn.prepareStatement(query);
                 ResultSet rs = stmt.executeQuery();
                 
                 while (rs.next()) {
-    int invoiceId = rs.getInt("Invoice_ID");
-    java.sql.Date invDate = rs.getDate("Inv_Date"); 
-    int totalPrice = rs.getInt("Total_Price"); 
-    String orderType = rs.getString("Order_Type"); 
-
-    tableModel.addRow(new Object[]{invoiceId, invDate, totalPrice, orderType});
-}
-
+                    int invoiceId = rs.getInt("Invoice_ID");
+                    java.sql.Date invDate = rs.getDate("Inv_Date"); 
+                    int totalPrice = rs.getInt("Total_Price"); 
+                    String orderType = rs.getString("Order_Type"); 
+                    String completion = Boolean.toString(rs.getBoolean("Completion"));
+                    tableModel.addRow(new Object[]{invoiceId, invDate, totalPrice, orderType,completion});
+                    }
+                conn.close();
             }
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(this, "Error loading invoices: " + ex.getMessage());
@@ -74,24 +71,62 @@ public class ViewInvoicesDialog extends JDialog {
     }
 
     private void applyFilter() {
-        String text = filterTextField.getText();
+        while(tableModel.getRowCount() > 0)
+        {
+            tableModel.removeRow(0);
+        }
         boolean completedOnly = completedOnlyCheckBox.isSelected();
+            if (completedOnly) {
+               try {
+            String url = FlameUI.DB_URL;
+            String user = FlameUI.USER;
+            String password = FlameUI.PASS;
+            try (Connection conn = DriverManager.getConnection(url, user, password)) {
+                String query = "SELECT * FROM INVOICE  WHERE Completion=true";
+                PreparedStatement stmt = conn.prepareStatement(query);
+                ResultSet rs = stmt.executeQuery();
+                
+                while (rs.next()) {
+                    int invoiceId = rs.getInt("Invoice_ID");
+                    java.sql.Date invDate = rs.getDate("Inv_Date"); 
+                    int totalPrice = rs.getInt("Total_Price"); 
+                    String orderType = rs.getString("Order_Type"); 
+                    String completion = Boolean.toString(rs.getBoolean("Completion"));
+                    tableModel.addRow(new Object[]{invoiceId, invDate, totalPrice, orderType,completion});                   
+                }
+                conn.close();
 
-        
-        RowFilter<DefaultTableModel, Object> rf = null;
-        try {
-            if (completedOnly && text.trim().length() > 0) {
-                rf = RowFilter.regexFilter(text, 1);
-                rf = RowFilter.andFilter(java.util.List.of(rf, RowFilter.regexFilter("Completed", 4)));
-            } else if (completedOnly) {
-                rf = RowFilter.regexFilter("Completed", 4);
-            } else if (text.trim().length() > 0) {
-                rf = RowFilter.regexFilter(text, 1);
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error loading invoices: " + ex.getMessage());
+        }
+            } else {
+                try {
+            String url = FlameUI.DB_URL;
+            String user = FlameUI.USER;
+            String password = FlameUI.PASS;
+            try (Connection conn = DriverManager.getConnection(url, user, password)) {
+                String query = "SELECT * FROM INVOICE";
+                PreparedStatement stmt = conn.prepareStatement(query);
+                ResultSet rs = stmt.executeQuery();
+                
+                while (rs.next()) {
+                    int invoiceId = rs.getInt("Invoice_ID");
+                    java.sql.Date invDate = rs.getDate("Inv_Date"); 
+                    int totalPrice = rs.getInt("Total_Price"); 
+                    String orderType = rs.getString("Order_Type"); 
+                    String completion = Boolean.toString(rs.getBoolean("Completion"));
+                    tableModel.addRow(new Object[]{invoiceId, invDate, totalPrice, orderType,completion});
+                    }
+                conn.close();
+
+            }
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(this, "Error loading invoices: " + ex.getMessage());
+        }
             }
 
-            sorter.setRowFilter(rf);
-        } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Invalid filter: " + ex.getMessage());
-        }
+            
+        
     }
 }
