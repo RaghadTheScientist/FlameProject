@@ -161,11 +161,12 @@ DefaultTableModel waitingListModel ;
    private void completeInvoice() {
         int selectedRow = currentInvoice.getSelectedRow();
         if (selectedRow != -1) {
-            int invoiceId = (int) currentInvoice.getValueAt(selectedRow, 0);
-            String sql = "UPDATE INVOICE SET Completion = true WHERE Invoice_ID = ?";
+            int invoiceId = Integer.parseInt(invoiceLabe.getText().substring(9));
+            String sql = "UPDATE INVOICE SET Completion = true, FP_ID =? WHERE Invoice_ID = ?";
             try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
                  PreparedStatement stmt = conn.prepareStatement(sql)) {
-                stmt.setInt(1, invoiceId);
+                stmt.setInt(1, ID);
+                stmt.setInt(2, invoiceId);
                 stmt.executeUpdate();
                 // Refresh the tables
                 tableModel.setRowCount(0);
@@ -1695,6 +1696,8 @@ DefaultTableModel waitingListModel ;
                     BaseLayout.add(Page3Panel);
                     BaseLayout.repaint();
                     BaseLayout.validate();
+                    populateTable();       
+                    populateWaitingList(); 
                 }else{
                     JOptionPane.showMessageDialog(this,"ID is incorrect");
                     IDtextf.setText("");
@@ -2097,7 +2100,7 @@ catch(SQLException ex){
     private javax.swing.JTextField itemP;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton4;
+    public javax.swing.JButton jButton4;
     private javax.swing.JButton jButton5;
     private javax.swing.JButton jButton6;
     private javax.swing.JComboBox<String> jComboBox1;
