@@ -720,6 +720,7 @@ DefaultTableModel waitingListModel ;
 
         jLabel5.setText("Salary");
 
+        jTextField1.setEditable(false);
         jTextField1.setText("jTextField1");
         jTextField1.setEnabled(false);
         jTextField1.addActionListener(new java.awt.event.ActionListener() {
@@ -742,6 +743,11 @@ DefaultTableModel waitingListModel ;
         jTextField5.setText("jTextField1");
 
         jButton2.setText("Save");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout MyInfoDialogLayout = new javax.swing.GroupLayout(MyInfoDialog.getContentPane());
         MyInfoDialog.getContentPane().setLayout(MyInfoDialogLayout);
@@ -1973,6 +1979,26 @@ DefaultTableModel waitingListModel ;
         // TODO add your handling code here:
          completeInvoice();
     }//GEN-LAST:event_completeButtonActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+       String phoneNumber = jTextField4.getText();
+    if (phoneNumber.length() != 9) 
+    JOptionPane.showMessageDialog(null, "The Phone Number Must Be 9 digits.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
+       
+    try{
+    Connection con =DriverManager.getConnection("jdbc:mysql://localhost/flame","root","1234" );
+    String query="UPDATE cashier SET first_name=?,last_name=?,phone_number=? WHERE cashier_id=?";
+    PreparedStatement ps=con.prepareStatement(query);
+    ps.setString(1,jTextField2.getText());
+    ps.setString(2,jTextField3.getText());
+    ps.setString(3,jTextField4.getText());
+    ps.setInt(4,ID );
+    ps.executeUpdate();
+    }                                        
+catch(SQLException e){
+}
+      
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
