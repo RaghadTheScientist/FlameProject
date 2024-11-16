@@ -15,9 +15,9 @@ import javax.swing.event.TableModelListener;
 import java.time.*;
 import javax.swing.table.DefaultTableModel;
 public class FlameUI extends javax.swing.JFrame {//test
-public static final String  DB_URL = "jdbc:mysql://localhost/flame";
+public static final String  DB_URL = "jdbc:mysql://localhost/sys";
 public static final String  USER = "root";
-public static final String  PASS = "1234";
+public static final String  PASS = "2n4@060";
 
 public static int ID ;
 public static String EmployeeType;
@@ -29,18 +29,269 @@ public String InvT1,InvT2;
  private JButton[] btnCompleteInvoice = new JButton[4];
  private JTextPane[] textPaneInvoiceDetails= new JTextPane[4];
  private JPanel[] invoicePanels = new JPanel[4];
- private DefaultTableModel model;
+ //private DefaultTableModel model;
  //private JPanel centerPanel;
- private InvoiceManager invoiceManager;
+InvoiceManager invoiceManager;
+DefaultTableModel tableModel;
  //NADA========================================================================================
+ 
+ //JLabel P3Panel3 = new JLabel();
+//JLabel waitingListLabel = new JLabel("Invoice Waiting List");
+//JPanel waitingListPanel = new JPanel(new BorderLayout());
+//JTable tableRemainingInvoice = new JTable();
+ 
+DefaultTableModel waitingListModel ;
+
+
     public FlameUI() {
         initComponents();
+        
+        waitingListModel = new DefaultTableModel(new Object[]{"Invoice_ID", "Completion"}, 0); 
+        tableRemainingInvoice.setModel(waitingListModel); 
+        tableModel = new DefaultTableModel(new Object[]{"Item_ID", "Item_Name", "Category", "Quantity"}, 0); 
+        currentInvoice.setModel(tableModel); 
+       
+    }
 
+       /* waitingListModel = new DefaultTableModel();
+        tableRemainingInvoice = new JTable(waitingListModel);
+        waitingListModel.setColumnIdentifiers(new String[] {"Invoice ID", "Completion"});
+
+        tableModel = new DefaultTableModel();
+        currentInvoice = new JTable(tableModel);
+        tableModel.setColumnIdentifiers(new String[] {"Item ID", "Item Name", "Category", "Quantity"});
+
+        completeButton = new JButton("Complete");
+        
+        // Populate the tables
+        populateTable();
+        populateWaitingList();
+
+        // Layout setup
+         centerPanel = new JPanel(new BorderLayout());
+        centerPanel.add(invoiceLabe, BorderLayout.NORTH);
+        centerPanel.add(new JScrollPane(currentInvoice), BorderLayout.CENTER);
+        add(centerPanel, BorderLayout.CENTER);
+
+         P3Panel3 = new JPanel(new BorderLayout());
+        P3Panel3.add(P3P3Label1, BorderLayout.NORTH);
+        P3Panel3.add(new JScrollPane(tableRemainingInvoice), BorderLayout.CENTER);
+        add(P3Panel3, BorderLayout.SOUTH);
+
+        add(completeButton, BorderLayout.SOUTH); // Add the "Complete" button
+
+        // Handle the "Complete" button click
+        jButton1.addActionListener(e -> {
+            int selectedRow = currentInvoice.getSelectedRow();
+            if (selectedRow != -1) {
+                int invoiceId = (int) currentInvoice.getValueAt(selectedRow, 0);
+                String sql = "UPDATE INVOICE SET Completion = true WHERE Invoice_ID = ?";
+                try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                     PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setInt(1, invoiceId);
+                    stmt.executeUpdate();
+                    // Refresh the tables
+                    tableModel.setRowCount(0);
+                    waitingListModel.setRowCount(0);
+                    invoiceLabe.setText("");
+                    populateTable();
+                    populateWaitingList();
+                } catch (SQLException ex) {
+                    // Handle the exception
+                }
+            }
+        });
+
+        pack();
+        setLocationRelativeTo(null);
+    }*/
+     private void populateTable() {
+        String sql = "SELECT i.Invoice_ID, t.Item_ID, t.Item_Name, t.Category, c.Quantity "
+                   + "FROM INVOICE i "
+                   + "JOIN CONSIST_OF c ON i.Invoice_ID = c.Inv_ID "
+                   + "JOIN ITEM t ON c.I_ID = t.Item_ID "
+                   + "WHERE i.Completion = false "
+                   + "ORDER BY i.Invoice_ID ASC "
+                   + "LIMIT 1";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            tableModel.setRowCount(0);
+            if (rs.next()) {
+                int invoiceId = rs.getInt("Invoice_ID");
+                invoiceLabe.setText("Invoice #" + invoiceId);
+
+                do {
+                tableModel.addRow(new Object[]{
+                    rs.getInt("Item_ID"),
+                    rs.getString("Item_Name"),
+                    rs.getString("Category"),
+                    rs.getInt("Quantity")
+                });
+            } while (rs.next());
+        } else {
+            invoiceLabe.setText("No current invoice available.");
+        }
+        } catch (SQLException e) {
+                    e.printStackTrace();
+          JOptionPane.showMessageDialog(this, "Database error: " + e.getMessage());
+          // Handle the exception
+        }
+    }
+   private void populateWaitingList() {
+        String sql = "SELECT Invoice_ID, Completion FROM INVOICE WHERE Completion = false ";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            
+            while (rs.next()) {
+                waitingListModel.addRow(new Object[] {
+                    rs.getInt("Invoice_ID"),
+                    rs.getBoolean("Completion")
+                });
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); 
+            JOptionPane.showMessageDialog(this, " noo " + e.getMessage()); // Handle the exception
+        }
+    }
+   
+   private void completeInvoice() {
+        int selectedRow = currentInvoice.getSelectedRow();
+        if (selectedRow != -1) {
+            int invoiceId = (int) currentInvoice.getValueAt(selectedRow, 0);
+            String sql = "UPDATE INVOICE SET Completion = true WHERE Invoice_ID = ?";
+            try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+                 PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, invoiceId);
+                stmt.executeUpdate();
+                // Refresh the tables
+                tableModel.setRowCount(0);
+                waitingListModel.setRowCount(0);
+                invoiceLabe.setText("");
+                populateWaitingList();
+                populateTable();
+                
+            } catch (SQLException ex) {
+                ex.printStackTrace(); // Handle the exception
+                 JOptionPane.showMessageDialog(this, "not complete" + ex.getMessage());
+            }
+        }
+    }
+
+
+       /* waitingListModel = new DefaultTableModel();
+        tableRemainingInvoice = new JTable(waitingListModel);
+        waitingListModel.setColumnIdentifiers(new String[] {"Invoice ID", "Completion"});
+        
+        
+        
+        // Populate the main table
+        DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.setColumnIdentifiers(new String[] {"Item_ID", "Item_Name", "Category", "Quantity"});
+        currentInvoice.setModel(tableModel);
+
+
+                // Retrieve the next incomplete invoice
+        String sql = "SELECT i.Invoice_ID, t.Item_ID, t.Item_Name, t.Category, c.Quantity "
+                   + "FROM INVOICE i "
+                   + "JOIN CONSISTS_OF c ON i.Invoice_ID = c.Inv_ID "
+                   + "JOIN ITEM t ON c.LID = t.Item_ID "
+                   //+ "WHERE i.Completion = false "
+                   + "ORDER BY i.Invoice_ID ASC "
+                   + "LIMIT 1";
+
+       
+        
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/sys","root","2n4@060");
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                int invoiceId = rs.getInt("Invoice_ID");
+                invoiceLabe.setText("Invoice #" + invoiceId);
+
+                // Populate the main table
+                do {
+                    tableModel.addRow(new Object[] {
+                        rs.getInt("Item_ID"),
+                        rs.getString("Item_Name"),
+                        rs.getString("Category"),
+                        rs.getInt("Quantity")
+                    });
+                } while (rs.next());
+            }
+        } catch (SQLException e) {
+            // Handle the exception
+        }
+        
+                // Populate the waiting list table
+        sql = "SELECT i.Invoice_ID, i.Order_Type, i.Completion "
+            + "FROM INVOICE i ";
+            //+ "WHERE i.Completion = false";
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/sys","root","2n4@060");
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                waitingListModel.addRow(new Object[] {
+                    rs.getInt("Invoice_ID"),
+                    rs.getString("Order_Type"),
+                    rs.getBoolean("Completion")
+                });
+            }
+        } catch (SQLException e) {
+            // Handle the exception
+        }//2
+        
+       /*         // Add the components to the GUI
+        JPanel tablePanel = new JPanel(new BorderLayout());
+        tablePanel.add(invoiceLabel, BorderLayout.NORTH);
+        tablePanel.add(new JScrollPane(jTable1), BorderLayout.CENTER);
+        add(tablePanel, BorderLayout.CENTER);
+
+        waitingListPanel.add(waitingListLabel, BorderLayout.NORTH);
+        waitingListPanel.add(new JScrollPane(waitingListTable), BorderLayout.CENTER);
+        add(waitingListPanel, BorderLayout.SOUTH);
+        JButton completeButton = new JButton("Complete");
+        
+        add(completeButton, BorderLayout.SOUTH);*/
+
+      /*  
+        completeButton.addActionListener(e -> {
+    int selectedRow = currentInvoice.getSelectedRow();
+    if (selectedRow != -1) {
+        int invoiceId = (int) currentInvoice.getValueAt(selectedRow, 0);
+        String sqll = "UPDATE INVOICE SET Completion = true WHERE Invoice_ID = ?";
+        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/sys","root","2n4@060");
+             PreparedStatement stmt = conn.prepareStatement(sqll)) {
+            stmt.setInt(1, invoiceId);
+            stmt.executeUpdate();
+            // Refresh the table with the next incomplete invoice
+            tableModel.setRowCount(0);
+            waitingListModel.setRowCount(0);
+            invoiceLabe.setText("");
+            populateTable();
+            populateWaitingList();
+        } catch (SQLException ex) {
+            // Handle the exception
+        }
+    }
+});
+        
+  pack();
+  setLocationRelativeTo(null);   }  */ 
+        
+        
+        
+        
 
    
    //NADA========================================================================================    
    //this for Food Preparer Page NADA
-        
+      /*  
         btnMyInformation = new JButton("My Information");
         btnViewInvoices = new JButton("View Invoices");
         btnCreateNewItem = new JButton("Create New Item");
@@ -92,7 +343,7 @@ public String InvT1,InvT2;
             
             centerPanel.add(invoicePanels[i]);
         }
-        getContentPane().add(centerPanel, BorderLayout.CENTER);
+        getContentPane().add(centerPanel, BorderLayout.CENTER); */
         
         
         //bottom
@@ -105,34 +356,35 @@ public String InvT1,InvT2;
         // model = (DefaultTableModel)tableRemainingInvoice.getModel();
         //tableRemainingInvoice.setModel(model); 
         
-         String query = "SELECT * FROM INVOICE WHERE Completion = false";
-        
-         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(query)) {
-             Statement st= conn.createStatement();
+        // String query = "SELECT * FROM invoice WHERE Completion = false";
+        /*
+         try (//Connection conn = DatabaseConnection.getConnection();
+            Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost/sys","root","2n4@060");
+           // PreparedStatement stmt = myCon.prepareStatement(query)) {//=================================================================
+            Statement st= myCon.createStatement();
+                 
             ResultSet rs = st.executeQuery(query);
             
-            while (rs.next()) {
+            /* while(rs.next()){
                
-                    String Invoice_ID=String.valueOf( rs.getInt("Invoice_ID"));
+                 String Invoice_ID=String.valueOf( rs.getInt("Invoice_ID"));
                     
                    //String Completion= rs.getBoolean("Completion");
                    
-                   String Order_Type= rs.getString("Order_Type");
+                 String Order_Type= rs.getString("Order_Type");
                 
-                        
-                    String []tbData = {Invoice_ID, Order_Type};
+                   String tbData[] = {Invoice_ID, Order_Type};
               model = (DefaultTableModel)tableRemainingInvoice.getModel();
              
             }
         } catch (SQLException ex) {
         Logger.getLogger(FlameUI.class.getName()).log(Level.SEVERE, null, ex);
-    }
+    }*/
      //NADA========================================================================================       
 
             
       //NADA========================================================================================  
-        btnMyInformation.addActionListener(new ActionListener() {
+       /* btnMyInformation.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 displayMyInformation();
@@ -163,11 +415,11 @@ public String InvT1,InvT2;
             });
         }
         loadPendingInvoices();
-    }
+    }*/
     //NADA========================================================================================
 
     //NADA========================================================================================
-    private void displayMyInformation() {
+   /* private void displayMyInformation() {
         JOptionPane.showMessageDialog(this, "Display My Information - Fetch from DB");
     }
 
@@ -221,8 +473,62 @@ public String InvT1,InvT2;
         for (Invoice invoice : remainingInvoices) {
             model.addRow(new Object[]{invoice.getInvoiceId(), "Pending", invoice.getTotalPrice()});
         }
-    }
+    }*/
     //NADA========================================================================================
+    
+    /*
+    private void populateTable() {
+        String sql = "SELECT i.Invoice_ID, t.Item_ID, t.Item_Name, t.Category, c.Quantity "
+                   + "FROM INVOICE i "
+                   + "JOIN CONSISTS_OF c ON i.Invoice_ID = c.Inv_ID "
+                   + "JOIN ITEM t ON c.LID = t.Item_ID "
+                   //+ "WHERE i.Completion = false "
+                   + "ORDER BY i.Invoice_ID ASC "
+                   + "LIMIT 1";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                int invoiceId = rs.getInt("Invoice_ID");
+                invoiceLabe.setText("Invoice #" + invoiceId);
+
+                do {
+                    tableModel.addRow(new Object[] {
+                        rs.getInt("Item_ID"),
+                        rs.getString("Item_Name"),
+                        rs.getString("Category"),
+                        rs.getInt("Quantity")
+                    });
+                } while (rs.next());
+            }
+        } catch (SQLException e) {
+            // Handle the exception
+        }
+    }
+   private void populateWaitingList() {
+        String sql = "SELECT Invoice_ID, Completion FROM INVOICE WHERE Completion = false";
+        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                waitingListModel.addRow(new Object[] {
+                    rs.getInt("Invoice_ID"),
+                    rs.getBoolean("Completion")
+                });
+            }
+        } catch (SQLException e) {
+            // Handle the exception
+        }
+    }*/
+    
+    
+    
+    
+    
+    
     public void GenerateItems(){
     List<Item> list = null;
     try {
@@ -394,22 +700,11 @@ public String InvT1,InvT2;
         btnCreateNewItem = new javax.swing.JButton();
         P2P1Button4 = new javax.swing.JButton();
         centerPanel = new javax.swing.JPanel();
-        invoicePanel0 = new javax.swing.JPanel();
-        btnCompleteInvoice0 = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
-        textPaneInvoiceDetails0 = new javax.swing.JTextPane();
-        invoicePanel1 = new javax.swing.JPanel();
-        btnCompleteInvoice1 = new javax.swing.JButton();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        textPaneInvoiceDetails1 = new javax.swing.JTextPane();
-        invoicePanel2 = new javax.swing.JPanel();
-        btnCompleteInvoice2 = new javax.swing.JButton();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        textPaneInvoiceDetails2 = new javax.swing.JTextPane();
-        invoicePanel3 = new javax.swing.JPanel();
-        btnCompleteInvoice3 = new javax.swing.JButton();
-        jScrollPane4 = new javax.swing.JScrollPane();
-        textPaneInvoiceDetails3 = new javax.swing.JTextPane();
+        currentInvoice = new javax.swing.JTable();
+        jScrollBar1 = new javax.swing.JScrollBar();
+        completeButton = new javax.swing.JButton();
+        invoiceLabe = new javax.swing.JLabel();
         P3Panel3 = new javax.swing.JPanel();
         P3P3ScrollPane = new javax.swing.JScrollPane();
         tableRemainingInvoice = new javax.swing.JTable();
@@ -1229,7 +1524,7 @@ public String InvT1,InvT2;
                 .addComponent(btnViewInvoices, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(btnCreateNewItem, javax.swing.GroupLayout.PREFERRED_SIZE, 207, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 179, Short.MAX_VALUE)
                 .addComponent(P2P1Button4, javax.swing.GroupLayout.PREFERRED_SIZE, 60, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
@@ -1248,210 +1543,74 @@ public String InvT1,InvT2;
         centerPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
         centerPanel.setPreferredSize(new java.awt.Dimension(910, 300));
 
-        invoicePanel0.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
-        invoicePanel0.setPreferredSize(new java.awt.Dimension(216, 252));
-        invoicePanel0.setVerifyInputWhenFocusTarget(false);
+        currentInvoice.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null, null},
+                {null, null, null, null},
+                {null, null, null, null}
+            },
+            new String [] {
+                "Item_ID", "Item_Name", "Category", "Quantity"
+            }
+        ));
+        jScrollPane1.setViewportView(currentInvoice);
 
-        btnCompleteInvoice0.setText("Complate");
-        btnCompleteInvoice0.addActionListener(new java.awt.event.ActionListener() {
+        completeButton.setText("Complete");
+        completeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCompleteInvoice0ActionPerformed(evt);
+                completeButtonActionPerformed(evt);
             }
         });
 
-        textPaneInvoiceDetails0.setEditable(false);
-        textPaneInvoiceDetails0.setBackground(java.awt.SystemColor.controlHighlight);
-        textPaneInvoiceDetails0.setDisabledTextColor(new java.awt.Color(204, 204, 204));
-        jScrollPane1.setViewportView(textPaneInvoiceDetails0);
-
-        javax.swing.GroupLayout invoicePanel0Layout = new javax.swing.GroupLayout(invoicePanel0);
-        invoicePanel0.setLayout(invoicePanel0Layout);
-        invoicePanel0Layout.setHorizontalGroup(
-            invoicePanel0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(invoicePanel0Layout.createSequentialGroup()
-                .addGap(40, 40, 40)
-                .addComponent(btnCompleteInvoice0, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(52, Short.MAX_VALUE))
-            .addGroup(invoicePanel0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(invoicePanel0Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 209, Short.MAX_VALUE)
-                    .addContainerGap()))
-        );
-        invoicePanel0Layout.setVerticalGroup(
-            invoicePanel0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, invoicePanel0Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnCompleteInvoice0, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(invoicePanel0Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(invoicePanel0Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(46, Short.MAX_VALUE)))
-        );
-
-        invoicePanel1.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
-        invoicePanel1.setPreferredSize(new java.awt.Dimension(216, 252));
-        invoicePanel1.setVerifyInputWhenFocusTarget(false);
-
-        btnCompleteInvoice1.setText("Complate");
-        btnCompleteInvoice1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCompleteInvoice1ActionPerformed(evt);
-            }
-        });
-
-        textPaneInvoiceDetails1.setEditable(false);
-        textPaneInvoiceDetails1.setBackground(java.awt.SystemColor.controlHighlight);
-        jScrollPane2.setViewportView(textPaneInvoiceDetails1);
-
-        javax.swing.GroupLayout invoicePanel1Layout = new javax.swing.GroupLayout(invoicePanel1);
-        invoicePanel1.setLayout(invoicePanel1Layout);
-        invoicePanel1Layout.setHorizontalGroup(
-            invoicePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(invoicePanel1Layout.createSequentialGroup()
-                .addGap(42, 42, 42)
-                .addComponent(btnCompleteInvoice1, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(42, Short.MAX_VALUE))
-            .addGroup(invoicePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(invoicePanel1Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
-                    .addContainerGap()))
-        );
-        invoicePanel1Layout.setVerticalGroup(
-            invoicePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, invoicePanel1Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnCompleteInvoice1, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(invoicePanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(invoicePanel1Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(46, Short.MAX_VALUE)))
-        );
-
-        invoicePanel2.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
-        invoicePanel2.setPreferredSize(new java.awt.Dimension(216, 252));
-        invoicePanel2.setVerifyInputWhenFocusTarget(false);
-
-        btnCompleteInvoice2.setText("Complate");
-        btnCompleteInvoice2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCompleteInvoice2ActionPerformed(evt);
-            }
-        });
-
-        textPaneInvoiceDetails2.setEditable(false);
-        textPaneInvoiceDetails2.setBackground(java.awt.SystemColor.controlHighlight);
-        jScrollPane3.setViewportView(textPaneInvoiceDetails2);
-
-        javax.swing.GroupLayout invoicePanel2Layout = new javax.swing.GroupLayout(invoicePanel2);
-        invoicePanel2.setLayout(invoicePanel2Layout);
-        invoicePanel2Layout.setHorizontalGroup(
-            invoicePanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(invoicePanel2Layout.createSequentialGroup()
-                .addGap(40, 40, 40)
-                .addComponent(btnCompleteInvoice2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(44, Short.MAX_VALUE))
-            .addGroup(invoicePanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(invoicePanel2Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
-                    .addContainerGap()))
-        );
-        invoicePanel2Layout.setVerticalGroup(
-            invoicePanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, invoicePanel2Layout.createSequentialGroup()
-                .addContainerGap(165, Short.MAX_VALUE)
-                .addComponent(btnCompleteInvoice2, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(invoicePanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(invoicePanel2Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(46, Short.MAX_VALUE)))
-        );
-
-        invoicePanel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
-        invoicePanel3.setPreferredSize(new java.awt.Dimension(216, 252));
-        invoicePanel3.setVerifyInputWhenFocusTarget(false);
-
-        btnCompleteInvoice3.setText("Complate");
-        btnCompleteInvoice3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnCompleteInvoice3ActionPerformed(evt);
-            }
-        });
-
-        textPaneInvoiceDetails3.setEditable(false);
-        textPaneInvoiceDetails3.setBackground(java.awt.SystemColor.controlHighlight);
-        jScrollPane4.setViewportView(textPaneInvoiceDetails3);
-
-        javax.swing.GroupLayout invoicePanel3Layout = new javax.swing.GroupLayout(invoicePanel3);
-        invoicePanel3.setLayout(invoicePanel3Layout);
-        invoicePanel3Layout.setHorizontalGroup(
-            invoicePanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(invoicePanel3Layout.createSequentialGroup()
-                .addGap(40, 40, 40)
-                .addComponent(btnCompleteInvoice3, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(44, Short.MAX_VALUE))
-            .addGroup(invoicePanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(invoicePanel3Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
-                    .addContainerGap()))
-        );
-        invoicePanel3Layout.setVerticalGroup(
-            invoicePanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, invoicePanel3Layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(btnCompleteInvoice3, javax.swing.GroupLayout.PREFERRED_SIZE, 31, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-            .addGroup(invoicePanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(invoicePanel3Layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(46, Short.MAX_VALUE)))
-        );
+        invoiceLabe.setText("Invoice #");
 
         javax.swing.GroupLayout centerPanelLayout = new javax.swing.GroupLayout(centerPanel);
         centerPanel.setLayout(centerPanelLayout);
         centerPanelLayout.setHorizontalGroup(
             centerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(centerPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(invoicePanel0, javax.swing.GroupLayout.PREFERRED_SIZE, 223, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(completeButton)
+                .addGap(393, 393, 393))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, centerPanelLayout.createSequentialGroup()
+                .addGap(51, 51, 51)
+                .addComponent(invoiceLabe)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(invoicePanel1, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(invoicePanel2, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(invoicePanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 215, Short.MAX_VALUE)
-                .addGap(16, 16, 16))
+                .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(188, 188, 188))
         );
         centerPanelLayout.setVerticalGroup(
             centerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(centerPanelLayout.createSequentialGroup()
+                .addGap(102, 102, 102)
+                .addComponent(jScrollBar1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, centerPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addGroup(centerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
-                    .addComponent(invoicePanel2, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
-                    .addComponent(invoicePanel1, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
-                    .addComponent(invoicePanel0, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
-                    .addComponent(invoicePanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE))
-                .addGap(312, 312, 312))
+                .addGroup(centerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(centerPanelLayout.createSequentialGroup()
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
+                    .addGroup(centerPanelLayout.createSequentialGroup()
+                        .addGap(91, 91, 91)
+                        .addComponent(invoiceLabe)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                .addComponent(completeButton)
+                .addGap(219, 219, 219))
         );
 
         P3Panel3.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(153, 153, 153)));
 
         tableRemainingInvoice.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
             },
             new String [] {
-                "Invoice_ID", "Order_Type"
+                "Invoice_ID", "Order_Type", "Completion"
             }
         ));
         tableRemainingInvoice.setGridColor(new java.awt.Color(153, 153, 153));
@@ -1612,22 +1771,6 @@ public String InvT1,InvT2;
     private void btnMyInformationActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnMyInformationActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_btnMyInformationActionPerformed
-
-    private void btnCompleteInvoice0ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteInvoice0ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCompleteInvoice0ActionPerformed
-
-    private void btnCompleteInvoice1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteInvoice1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCompleteInvoice1ActionPerformed
-
-    private void btnCompleteInvoice2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteInvoice2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCompleteInvoice2ActionPerformed
-
-    private void btnCompleteInvoice3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnCompleteInvoice3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnCompleteInvoice3ActionPerformed
 
     private void btnViewInvoicesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnViewInvoicesActionPerformed
         // TODO add your handling code here:
@@ -1826,23 +1969,36 @@ public String InvT1,InvT2;
         BaseLayout.validate();
     }//GEN-LAST:event_jButton6ActionPerformed
 
+    private void completeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_completeButtonActionPerformed
+        // TODO add your handling code here:
+         completeInvoice();
+    }//GEN-LAST:event_completeButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-      
+      /* SwingUtilities.invokeLater(() -> new FlameUI().setVisible(true));
          java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new FlameUI().setVisible(true);
+                
             }
-        });
+        });  */
             
 
+         
+          SwingUtilities.invokeLater(new Runnable() {
+        @Override
+        public void run() {
+             FlameUI ui = new FlameUI();
+            ui.setVisible(true); 
+
+            
+            ui.populateTable();       
+            ui.populateWaitingList(); 
+        }
+    });
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -1886,19 +2042,14 @@ public String InvT1,InvT2;
     private javax.swing.JLabel TPT1;
     private javax.swing.JLabel TPT2;
     private javax.swing.JDialog ViewInvoicesDialog;
-    private javax.swing.JButton btnCompleteInvoice0;
-    private javax.swing.JButton btnCompleteInvoice1;
-    private javax.swing.JButton btnCompleteInvoice2;
-    private javax.swing.JButton btnCompleteInvoice3;
     private javax.swing.JButton btnCreateNewItem;
     private javax.swing.JButton btnMyInformation;
     private javax.swing.JButton btnViewInvoices;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JPanel centerPanel;
-    private javax.swing.JPanel invoicePanel0;
-    private javax.swing.JPanel invoicePanel1;
-    private javax.swing.JPanel invoicePanel2;
-    private javax.swing.JPanel invoicePanel3;
+    private javax.swing.JButton completeButton;
+    private javax.swing.JTable currentInvoice;
+    private javax.swing.JLabel invoiceLabe;
     private javax.swing.JTextField itemN;
     private javax.swing.JTextField itemP;
     private javax.swing.JButton jButton1;
@@ -1927,10 +2078,8 @@ public String InvT1,InvT2;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JScrollBar jScrollBar1;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JScrollPane jScrollPane7;
     private javax.swing.JTable jTable1;
@@ -1942,10 +2091,7 @@ public String InvT1,InvT2;
     private javax.swing.JButton resetbtt;
     private javax.swing.JButton signbtt;
     private javax.swing.JTable tableRemainingInvoice;
-    private javax.swing.JTextPane textPaneInvoiceDetails0;
-    private javax.swing.JTextPane textPaneInvoiceDetails1;
-    private javax.swing.JTextPane textPaneInvoiceDetails2;
-    private javax.swing.JTextPane textPaneInvoiceDetails3;
     private javax.swing.JPanel topPanel;
     // End of variables declaration//GEN-END:variables
+
 }
