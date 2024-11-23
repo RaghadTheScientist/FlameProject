@@ -51,7 +51,7 @@ public class ViewInvoicesDialog extends JDialog {
             String user = FlameUI.USER;
             String password = FlameUI.PASS;
             try (Connection conn = DriverManager.getConnection(url, user, password)) {
-                String query = "SELECT * FROM INVOICE";
+                String query = "SELECT Invoice_ID, Inv_Date, Total_Price, Order_Type,Completion FROM INVOICE ";
                 PreparedStatement stmt = conn.prepareStatement(query);
                 ResultSet rs = stmt.executeQuery();
                 

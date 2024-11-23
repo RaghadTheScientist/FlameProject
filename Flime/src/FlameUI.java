@@ -29,82 +29,24 @@ public String InvT1,InvT2;
  private JButton[] btnCompleteInvoice = new JButton[4];
  private JTextPane[] textPaneInvoiceDetails= new JTextPane[4];
  private JPanel[] invoicePanels = new JPanel[4];
- //private DefaultTableModel model;
- //private JPanel centerPanel;
-InvoiceManager invoiceManager;
+ 
+
 DefaultTableModel tableModel;
  //NADA========================================================================================
- 
- //JLabel P3Panel3 = new JLabel();
-//JLabel waitingListLabel = new JLabel("Invoice Waiting List");
-//JPanel waitingListPanel = new JPanel(new BorderLayout());
-//JTable tableRemainingInvoice = new JTable();
- 
+
 DefaultTableModel waitingListModel ;
 
 
     public FlameUI() {
         initComponents();
         
-        waitingListModel = new DefaultTableModel(new Object[]{"Invoice_ID", "Completion"}, 0); 
+        waitingListModel = new DefaultTableModel(new Object[]{"Invoice_ID", "Num_of_Items"}, 0); 
         tableRemainingInvoice.setModel(waitingListModel); 
         tableModel = new DefaultTableModel(new Object[]{"Item_ID", "Item_Name", "Category", "Quantity"}, 0); 
         currentInvoice.setModel(tableModel); 
        
     }
 
-       /* waitingListModel = new DefaultTableModel();
-        tableRemainingInvoice = new JTable(waitingListModel);
-        waitingListModel.setColumnIdentifiers(new String[] {"Invoice ID", "Completion"});
-
-        tableModel = new DefaultTableModel();
-        currentInvoice = new JTable(tableModel);
-        tableModel.setColumnIdentifiers(new String[] {"Item ID", "Item Name", "Category", "Quantity"});
-
-        completeButton = new JButton("Complete");
-        
-        // Populate the tables
-        populateTable();
-        populateWaitingList();
-
-        // Layout setup
-         centerPanel = new JPanel(new BorderLayout());
-        centerPanel.add(invoiceLabe, BorderLayout.NORTH);
-        centerPanel.add(new JScrollPane(currentInvoice), BorderLayout.CENTER);
-        add(centerPanel, BorderLayout.CENTER);
-
-         P3Panel3 = new JPanel(new BorderLayout());
-        P3Panel3.add(P3P3Label1, BorderLayout.NORTH);
-        P3Panel3.add(new JScrollPane(tableRemainingInvoice), BorderLayout.CENTER);
-        add(P3Panel3, BorderLayout.SOUTH);
-
-        add(completeButton, BorderLayout.SOUTH); // Add the "Complete" button
-
-        // Handle the "Complete" button click
-        jButton1.addActionListener(e -> {
-            int selectedRow = currentInvoice.getSelectedRow();
-            if (selectedRow != -1) {
-                int invoiceId = (int) currentInvoice.getValueAt(selectedRow, 0);
-                String sql = "UPDATE INVOICE SET Completion = true WHERE Invoice_ID = ?";
-                try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-                     PreparedStatement stmt = conn.prepareStatement(sql)) {
-                    stmt.setInt(1, invoiceId);
-                    stmt.executeUpdate();
-                    // Refresh the tables
-                    tableModel.setRowCount(0);
-                    waitingListModel.setRowCount(0);
-                    invoiceLabe.setText("");
-                    populateTable();
-                    populateWaitingList();
-                } catch (SQLException ex) {
-                    // Handle the exception
-                }
-            }
-        });
-
-        pack();
-        setLocationRelativeTo(null);
-    }*/
      private void populateTable() {
         String sql = "SELECT i.Invoice_ID, t.Item_ID, t.Item_Name, t.Category, c.Quantity "
                    + "FROM INVOICE i "
@@ -140,7 +82,7 @@ DefaultTableModel waitingListModel ;
         }
     }
    private void populateWaitingList() {
-        String sql = "SELECT Invoice_ID, Completion FROM INVOICE WHERE Completion = false ";
+        String sql = "SELECT I.Invoice_ID, COUNT(CO.I_ID) AS Number_of_Items FROM INVOICE I JOIN consist_of CO ON I.Invoice_ID = CO.Inv_ID WHERE I.Completion = false GROUP BY I.Invoice_ID; ";
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
@@ -148,8 +90,8 @@ DefaultTableModel waitingListModel ;
             
             while (rs.next()) {
                 waitingListModel.addRow(new Object[] {
-                    rs.getInt("Invoice_ID"),
-                    rs.getBoolean("Completion")
+                    rs.getInt("I.Invoice_ID"),
+                    rs.getInt("Number_of_Items")
                 });
             }
         } catch (SQLException e) {
@@ -183,348 +125,6 @@ DefaultTableModel waitingListModel ;
     }
 
 
-       /* waitingListModel = new DefaultTableModel();
-        tableRemainingInvoice = new JTable(waitingListModel);
-        waitingListModel.setColumnIdentifiers(new String[] {"Invoice ID", "Completion"});
-        
-        
-        
-        // Populate the main table
-        DefaultTableModel tableModel = new DefaultTableModel();
-        tableModel.setColumnIdentifiers(new String[] {"Item_ID", "Item_Name", "Category", "Quantity"});
-        currentInvoice.setModel(tableModel);
-
-
-                // Retrieve the next incomplete invoice
-        String sql = "SELECT i.Invoice_ID, t.Item_ID, t.Item_Name, t.Category, c.Quantity "
-                   + "FROM INVOICE i "
-                   + "JOIN CONSISTS_OF c ON i.Invoice_ID = c.Inv_ID "
-                   + "JOIN ITEM t ON c.LID = t.Item_ID "
-                   //+ "WHERE i.Completion = false "
-                   + "ORDER BY i.Invoice_ID ASC "
-                   + "LIMIT 1";
-
-       
-        
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/sys","root","2n4@060");
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            if (rs.next()) {
-                int invoiceId = rs.getInt("Invoice_ID");
-                invoiceLabe.setText("Invoice #" + invoiceId);
-
-                // Populate the main table
-                do {
-                    tableModel.addRow(new Object[] {
-                        rs.getInt("Item_ID"),
-                        rs.getString("Item_Name"),
-                        rs.getString("Category"),
-                        rs.getInt("Quantity")
-                    });
-                } while (rs.next());
-            }
-        } catch (SQLException e) {
-            // Handle the exception
-        }
-        
-                // Populate the waiting list table
-        sql = "SELECT i.Invoice_ID, i.Order_Type, i.Completion "
-            + "FROM INVOICE i ";
-            //+ "WHERE i.Completion = false";
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/sys","root","2n4@060");
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                waitingListModel.addRow(new Object[] {
-                    rs.getInt("Invoice_ID"),
-                    rs.getString("Order_Type"),
-                    rs.getBoolean("Completion")
-                });
-            }
-        } catch (SQLException e) {
-            // Handle the exception
-        }//2
-        
-       /*         // Add the components to the GUI
-        JPanel tablePanel = new JPanel(new BorderLayout());
-        tablePanel.add(invoiceLabel, BorderLayout.NORTH);
-        tablePanel.add(new JScrollPane(jTable1), BorderLayout.CENTER);
-        add(tablePanel, BorderLayout.CENTER);
-
-        waitingListPanel.add(waitingListLabel, BorderLayout.NORTH);
-        waitingListPanel.add(new JScrollPane(waitingListTable), BorderLayout.CENTER);
-        add(waitingListPanel, BorderLayout.SOUTH);
-        JButton completeButton = new JButton("Complete");
-        
-        add(completeButton, BorderLayout.SOUTH);*/
-
-      /*  
-        completeButton.addActionListener(e -> {
-    int selectedRow = currentInvoice.getSelectedRow();
-    if (selectedRow != -1) {
-        int invoiceId = (int) currentInvoice.getValueAt(selectedRow, 0);
-        String sqll = "UPDATE INVOICE SET Completion = true WHERE Invoice_ID = ?";
-        try (Connection conn = DriverManager.getConnection("jdbc:mysql://localhost/sys","root","2n4@060");
-             PreparedStatement stmt = conn.prepareStatement(sqll)) {
-            stmt.setInt(1, invoiceId);
-            stmt.executeUpdate();
-            // Refresh the table with the next incomplete invoice
-            tableModel.setRowCount(0);
-            waitingListModel.setRowCount(0);
-            invoiceLabe.setText("");
-            populateTable();
-            populateWaitingList();
-        } catch (SQLException ex) {
-            // Handle the exception
-        }
-    }
-});
-        
-  pack();
-  setLocationRelativeTo(null);   }  */ 
-        
-        
-        
-        
-
-   
-   //NADA========================================================================================    
-   //this for Food Preparer Page NADA
-      /*  
-        btnMyInformation = new JButton("My Information");
-        btnViewInvoices = new JButton("View Invoices");
-        btnCreateNewItem = new JButton("Create New Item");
-        
-        btnCompleteInvoice[0]=new JButton();
-        btnCompleteInvoice[1]=new JButton();
-        btnCompleteInvoice[2]=new JButton();
-        btnCompleteInvoice[3]=new JButton();
-        
-        textPaneInvoiceDetails[0] = new JTextPane();
-        textPaneInvoiceDetails[1] = new JTextPane();
-        textPaneInvoiceDetails[2] = new JTextPane();
-        textPaneInvoiceDetails[3] = new JTextPane();
-        
-        invoicePanels[0]= new JPanel();
-        invoicePanels[1]= new JPanel();
-        invoicePanels[2]= new JPanel();
-        invoicePanels[3]= new JPanel();
-       
-        invoiceManager = new InvoiceManager();
-        //NADA========================================================================================
-        
-        //NADA========================================================================================
-        // top
-        JPanel topPanel = new JPanel(new FlowLayout());
-        topPanel.add(btnMyInformation);
-        topPanel.add(btnViewInvoices);
-        topPanel.add(btnCreateNewItem);
-        getContentPane().add(topPanel, BorderLayout.NORTH);
-
-        
-         //middle
-        centerPanel = new JPanel(new GridLayout(2, 2, 10, 10)); 
-        for (int i = 0; i < 4; i++) {
-            invoicePanels[i] = new JPanel(new BorderLayout()); 
-            
-           
-            btnCompleteInvoice[i] = new JButton("Complete");
-            
-           
-            textPaneInvoiceDetails[i] = new JTextPane();
-            textPaneInvoiceDetails[i].setText("Invoice Details #" + (i + 1)); 
-            textPaneInvoiceDetails[i].setEditable(false); 
-            JScrollPane scrollPane = new JScrollPane(textPaneInvoiceDetails[i]);
-
-           
-            invoicePanels[i].add(scrollPane, BorderLayout.CENTER);
-            invoicePanels[i].add(btnCompleteInvoice[i], BorderLayout.SOUTH);
-            
-            centerPanel.add(invoicePanels[i]);
-        }
-        getContentPane().add(centerPanel, BorderLayout.CENTER); */
-        
-        
-        //bottom
-        //DefaultTableModel model = new DefaultTableModel(columnNames, 0);
-        //tableRemainingInvoices = new JTable(model);
-        //JScrollPane scrollPaneTable = new JScrollPane(tableRemainingInvoices);
-        //getContentPane().add(scrollPaneTable, BorderLayout.SOUTH);
-
-        
-        // model = (DefaultTableModel)tableRemainingInvoice.getModel();
-        //tableRemainingInvoice.setModel(model); 
-        
-        // String query = "SELECT * FROM invoice WHERE Completion = false";
-        /*
-         try (//Connection conn = DatabaseConnection.getConnection();
-            Connection myCon = DriverManager.getConnection("jdbc:mysql://localhost/sys","root","2n4@060");
-           // PreparedStatement stmt = myCon.prepareStatement(query)) {//=================================================================
-            Statement st= myCon.createStatement();
-                 
-            ResultSet rs = st.executeQuery(query);
-            
-            /* while(rs.next()){
-               
-                 String Invoice_ID=String.valueOf( rs.getInt("Invoice_ID"));
-                    
-                   //String Completion= rs.getBoolean("Completion");
-                   
-                 String Order_Type= rs.getString("Order_Type");
-                
-                   String tbData[] = {Invoice_ID, Order_Type};
-              model = (DefaultTableModel)tableRemainingInvoice.getModel();
-             
-            }
-        } catch (SQLException ex) {
-        Logger.getLogger(FlameUI.class.getName()).log(Level.SEVERE, null, ex);
-    }*/
-     //NADA========================================================================================       
-
-            
-      //NADA========================================================================================  
-       /* btnMyInformation.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                displayMyInformation();
-            }
-        });
-        
-         btnViewInvoices.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                displayAllInvoices();
-            }
-        });
-
-        btnCreateNewItem.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                createNewItem();
-            }
-        });
-
-        for (int i = 0; i < 4; i++) {
-            final int index = i;
-            btnCompleteInvoice[i].addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    completeInvoice(index);
-                }
-            });
-        }
-        loadPendingInvoices();
-    }*/
-    //NADA========================================================================================
-
-    //NADA========================================================================================
-   /* private void displayMyInformation() {
-        JOptionPane.showMessageDialog(this, "Display My Information - Fetch from DB");
-    }
-
-    private void displayAllInvoices() {
-        JOptionPane.showMessageDialog(this, "Display All Invoices - Fetch from DB");
-    }
-
-    private void createNewItem() {
-        JOptionPane.showMessageDialog(this, "Create New Item - Add to DB");
-    }
-
-    private void completeInvoice(int invoiceIndex) {
-        try {
-            int invoiceId = Integer.parseInt(textPaneInvoiceDetails[invoiceIndex].getName());
-            invoiceManager.completeInvoice(invoiceId);
-            JOptionPane.showMessageDialog(this, "Invoice #" + invoiceId + " completed.");
-            loadPendingInvoices(); 
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error completing invoice.");
-        }
-    }
-
-    private void loadPendingInvoices() {
-        try {
-            List<Invoice> pendingInvoices = invoiceManager.getPendingInvoices();
-            for (int i = 0; i < 4; i++) {
-                if (i < pendingInvoices.size()) {
-                    Invoice invoice = pendingInvoices.get(i);
-                    textPaneInvoiceDetails[i].setText("Invoice ID: " + invoice.getInvoiceId() +
-                            "\nTotal Price: " + invoice.getTotalPrice() +
-                            "\nDate: " + invoice.getInvoiceDate());
-                    textPaneInvoiceDetails[i].setName(String.valueOf(invoice.getInvoiceId()));
-                    btnCompleteInvoice[i].setEnabled(true);
-                } else {
-                    textPaneInvoiceDetails[i].setText("No Invoice");
-                    textPaneInvoiceDetails[i].setName(null);
-                    btnCompleteInvoice[i].setEnabled(false);
-                }
-            }
-            updateRemainingInvoicesTable(pendingInvoices.subList(Math.min(4, pendingInvoices.size()), pendingInvoices.size()));
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error loading pending invoices.");
-        }
-    }
-
-    private void updateRemainingInvoicesTable(List<Invoice> remainingInvoices) {
-        DefaultTableModel model = (DefaultTableModel) tableRemainingInvoice.getModel();
-        model.setRowCount(0); 
-        for (Invoice invoice : remainingInvoices) {
-            model.addRow(new Object[]{invoice.getInvoiceId(), "Pending", invoice.getTotalPrice()});
-        }
-    }*/
-    //NADA========================================================================================
-    
-    /*
-    private void populateTable() {
-        String sql = "SELECT i.Invoice_ID, t.Item_ID, t.Item_Name, t.Category, c.Quantity "
-                   + "FROM INVOICE i "
-                   + "JOIN CONSISTS_OF c ON i.Invoice_ID = c.Inv_ID "
-                   + "JOIN ITEM t ON c.LID = t.Item_ID "
-                   //+ "WHERE i.Completion = false "
-                   + "ORDER BY i.Invoice_ID ASC "
-                   + "LIMIT 1";
-
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            if (rs.next()) {
-                int invoiceId = rs.getInt("Invoice_ID");
-                invoiceLabe.setText("Invoice #" + invoiceId);
-
-                do {
-                    tableModel.addRow(new Object[] {
-                        rs.getInt("Item_ID"),
-                        rs.getString("Item_Name"),
-                        rs.getString("Category"),
-                        rs.getInt("Quantity")
-                    });
-                } while (rs.next());
-            }
-        } catch (SQLException e) {
-            // Handle the exception
-        }
-    }
-   private void populateWaitingList() {
-        String sql = "SELECT Invoice_ID, Completion FROM INVOICE WHERE Completion = false";
-        try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS);
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                waitingListModel.addRow(new Object[] {
-                    rs.getInt("Invoice_ID"),
-                    rs.getBoolean("Completion")
-                });
-            }
-        } catch (SQLException e) {
-            // Handle the exception
-        }
-    }*/
-    
     
     
     
@@ -1656,7 +1256,7 @@ DefaultTableModel waitingListModel ;
         try{
             
             Connection con = DriverManager.getConnection(DB_URL,USER,PASS);
-            //mydb is database name مااعر int id = (int)IDtextf.getText();ف 
+           
            int id;
            try {
                id = Integer.parseInt(IDtextf.getText());
